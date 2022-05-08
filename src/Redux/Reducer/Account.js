@@ -3,32 +3,22 @@ import { createSlice } from "@reduxjs/toolkit";
 export const accountSlice = createSlice({
   name: "accountReducer",
   initialState: {
-    clientToken: "",
-    adminToken: "",
-    clientDisplay: {
-      name: "",
-      avatar: "",
-      birthday: "",
-      delivery: {},
-    },
-    adminDisplay: {
-      name: "",
-      avatar: "",
-      birthday: "",
-    },
+    Admin: {},
+
+    Client: {},
   },
   reducers: {
     adminLogin: (state, action) => {
-      state.adminToken = action.payload;
+      state.Admin = action.payload;
     },
     clientLogin: (state, action) => {
-      state.clientToken = action.payload;
+      state.Client = action.payload;
     },
     changeAdminDisplay: (state, action) => {
-      state.adminDisplay = { ...action.payload };
+      state.Admin = { ...action.payload };
     },
     changeClientDisplay: (state, action) => {
-      state.clientDisplay = { ...action.payload };
+      state.Client = { ...action.payload };
     },
   },
 });

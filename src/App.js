@@ -13,12 +13,11 @@ import Ariticles from "./pages/user/Ariticles/Detail";
 import Voucher from "./pages/user/Vounchers/Detail/index";
 import LoginAdmin from "./pages/admin/Login";
 import Blog from "./pages/user/Blog/index";
-import Checkout from "./pages/user/Checkout/index";
+import CheckOut from "./pages/user/CheckOut/CheckOut";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
+import SignIn from "./pages/user/Login/index";
+import SignUp from "./pages/user/Signup/Signup";
 function App() {
-  //Check login admin
-  var LogAdmin = false;
-
   return (
     <div className="App">
       <Router>
@@ -29,11 +28,7 @@ function App() {
                 <Route path={"/admin"} exact component={LoginAdmin}></Route>
 
                 <Route exact path={"/admin/dashboard"}>
-                  {LogAdmin == false ? (
-                    <Redirect to="/admin"></Redirect>
-                  ) : (
-                    <Dashboard />
-                  )}
+                  <Dashboard />
                 </Route>
               </Switch>
             </Admin>
@@ -46,8 +41,11 @@ function App() {
                 <Route path="/lienhe" component={Contacts}></Route>
                 <Route path="/blog" component={Blog}></Route>
                 <Route path="/baiviet:postid" component={Ariticles}></Route>
-                <Route path="/thanhtoan" component={Checkout}></Route>
+                <Route path="/payment" component={CheckOut}></Route>
                 <Route path="/voucher:vouchername" component={Voucher}></Route>
+                <Route path="/login" component={SignIn}></Route>
+                <Route path="/register" component={SignUp}></Route>
+                <Route path=""></Route>
               </Switch>
             </User>
           </Route>
