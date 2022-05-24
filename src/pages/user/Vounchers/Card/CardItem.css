@@ -4,13 +4,13 @@
 
 .site-card-wrapper{
   width: 95%;
-  margin: 20px auto;
+ 
+  ;
   /* text-align: center; */
   /* background-color: bisque; */
 }   
 
-.ant-col{
-  padding: 10px;
+.ant-col{ 
 }
 
 .Card-list{
@@ -19,10 +19,10 @@
 }
 
 .card-price{
+   height: 50px;
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-}
+ }
 
 .card-price h2{
   font-size: 14px;
@@ -43,13 +43,50 @@ button.ant-btn.ant-btn-primary.btn-color{
 
 .card-img{
   width: 100%;
-  height: 100%;
+   height: 300px;
+  object-fit: cover;
+ 
+
 
 }
 
-@media only screen and (min-width: 1025px) {
  
+
+@media screen and (max-width: 1024px) and (min-width: 768px)  {
+
+
   .card-img{
-  border: 1px solid  greenyellow
+        object-fit: contain;
+    width: 100%;
+    height: 250px;
+ 
+  }
+
+
+}
+
+@media  screen and (max-width: 767px)  and (min-width:600px) {
+
+
+  .card-img {
+    object-fit: contain;
+     height: 250px;
+ 
+     width: 100%;
+  }
+
+
+}
+
+
+ 
+ 
+
+@media only screen and (max-width:599px) and (min-width:320px)  {
+  .card-img {
+        object-fit: contain;
+    width: 100x;
+    height: 100px;
+
   }
 }

@@ -15,6 +15,7 @@ import axios from "axios";
 import { Request_User } from "../../../API/api";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
+import Cookies from "js-cookie";
 const LoginAdmin = () => {
   const pathname = window.location.pathname;
 
@@ -40,7 +41,10 @@ const LoginAdmin = () => {
 
         let changeurl = "/admin/dashboard";
         history.push(changeurl);
-        console.log(history);
+
+        let cookie = Cookies.get("refreshToken");
+
+        console.log(cookie);
       }
     });
   };

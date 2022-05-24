@@ -3,7 +3,7 @@ export const Request_User = {
   register: `${host}/auth/register`,
   login: `${host}/auth/login`,
   topvoucher: `${host}/voucher/top`,
-  voucher: `${host}/voucher?`,
+  voucher: `${host}/voucher/find`,
 };
 
 export const Request_Admin = {

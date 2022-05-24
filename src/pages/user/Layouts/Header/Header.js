@@ -6,6 +6,11 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import { Link } from "react-router-dom";
 const Header = () => {
+  if (window.performance) {
+    if (performance.navigation.type == 1) {
+      alert("This page is reloaded");
+    }
+  }
   return (
     <div className="container">
       <div className="Logo"></div>

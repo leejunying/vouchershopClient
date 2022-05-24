@@ -6,6 +6,7 @@ import Contacts from "../Contacts";
 import { BrowserRouter as Router, Link } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import Cart from "../../../Components/Cart/Cart.js";
 
@@ -32,6 +33,15 @@ const Home = () => {
 
   const [topvoucher, Settopvoucher] = useState([]);
 
+  const mobiles1 = useMediaQuery("(max-width:320px)");
+
+  const mobiles2 = useMediaQuery("(max-width:600px)");
+
+  const GridXs = {
+    opt1: 6,
+    opt2: 10,
+  };
+
   //Mount
 
   useEffect(() => {
@@ -39,7 +49,6 @@ const Home = () => {
       .get(Request_User.topvoucher)
       .then((res) => {
         if (res.status == 200) {
-          console.log(res);
           Settopvoucher(res["data"]);
         }
       })
@@ -71,7 +80,6 @@ const Home = () => {
                 <Grid
                   item={true}
                   xs={12}
-                  spacing={1}
                   className=" flex   jus-center"
                   key={indx}
                 >
@@ -81,7 +89,15 @@ const Home = () => {
                       <Grid className="" container>
                         {main["items"].map((item, indx) => {
                           return (
-                            <Grid xs={6} item={true} key={indx}>
+                            <Grid
+                              xs={
+                                mobiles1 == true || mobiles2 == true
+                                  ? GridXs.opt2
+                                  : GridXs.opt1
+                              }
+                              item={true}
+                              key={indx}
+                            >
                               {" "}
                               <CardItem
                                 x

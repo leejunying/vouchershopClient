@@ -11,11 +11,8 @@ const CardItem = (props) => {
     <div>
       <Link to={`vouchers/${data["slug"]}`}>
         <div className="site-card-wrapper">
-          <Row>
-            <img
-              className="card-img"
-              src="https://lafactoriaweb.com/wp-content/uploads/2020/10/Voucher-la-gi-01-600x375.jpg"
-            />
+          <Row style={{ maxHeight: "450px" }}>
+            <img className="card-img" src={data["img_url"]} />
             <div className="card-price-container">
               <Space
                 direction="vertical"
@@ -23,19 +20,14 @@ const CardItem = (props) => {
                 style={{ display: "flex" }}
               >
                 <Card
-                  title="Vé tháng hăng say công việc"
+                  title={`${data["title"]}`}
                   size="small"
                   bordered={false}
-                >
-                  <p>● Thẻ bay 0đ các chặng nội địa của Bamboo</p>
-                  <p>● Thẻ định danh dành cho 1 người</p>
-                  <p>● Bay các ngày trong tuần</p>
-                </Card>
+                ></Card>
               </Space>
               <div className="card-price">
-                <h2>1,650,000₫ - 4,500,000₫</h2>
                 <Button type="primary" className="btn-color">
-                  Mua ngay
+                  Xem thông tin...
                 </Button>
               </div>
             </div>
