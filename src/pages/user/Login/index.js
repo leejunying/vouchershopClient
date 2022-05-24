@@ -16,6 +16,14 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Link as LInk } from "react-router-dom";
+import axios from "axios";
+import { Request_User } from "../../../API/api";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { clientLogin } from "../../../Redux/Reducer/Account";
+import { SettingsInputAntennaTwoTone } from "@mui/icons-material";
+import { Commonfc } from "../../../Ultis/Commonfunction";
+
 function Copyright(props) {
   return (
     <Typography
@@ -38,6 +46,10 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const info_client = useSelector((state) => state["account"]["Client"]);
+  const dispatch = useDispatch();
+
+  console.log(info_client);
   const schema = yup.object().shape({
     username: yup
       .string()
@@ -59,6 +71,19 @@ export default function SignIn() {
 
   const onSubmit = (data) => {
     console.log(data);
+
+    if (data) {
+      axios
+        .post(Request_User.login, data)
+        .then((res) => {
+          if (res.status == 200) {
+            dispatch(clientLogin(res.data));
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   return (

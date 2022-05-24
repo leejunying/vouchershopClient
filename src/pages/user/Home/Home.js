@@ -29,6 +29,8 @@ const Home = () => {
   const dispatch = useDispatch();
   const state = useSelector((state) => (state = state));
 
+  console.log(state);
+
   //local state
 
   const [topvoucher, Settopvoucher] = useState([]);
@@ -40,6 +42,7 @@ const Home = () => {
   const GridXs = {
     opt1: 6,
     opt2: 10,
+    opt3: 12,
   };
 
   //Mount
@@ -56,6 +59,17 @@ const Home = () => {
         console.log(err);
       });
   }, []);
+
+  const arrTest = [
+    {
+      key: "AV",
+      value: 0,
+    },
+    {
+      key: "SV",
+      value: 0,
+    },
+  ];
 
   //init value
   const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -116,6 +130,37 @@ const Home = () => {
           ) : (
             <Spin indicator={antIcon} />
           )}
+
+          {arrTest.map((data, indx) => {
+            return (
+              <Grid key={indx}>
+                <h1>{data.key}</h1>
+                <Grid>
+                  <button onClick={() => dispatch(addItem(data))}>
+                    Buy Item
+                  </button>
+                </Grid>
+
+                <Grid>
+                  <button onClick={() => dispatch(removeItem(data))}>
+                    Delete Item
+                  </button>
+                </Grid>
+
+                <Grid>
+                  <button onClick={() => dispatch(increaseItem(data))}>
+                    Increa
+                  </button>
+                </Grid>
+
+                <Grid>
+                  <button onClick={() => dispatch(decreaseItem(data))}>
+                    Decrea
+                  </button>
+                </Grid>
+              </Grid>
+            );
+          })}
         </Grid>
       </section>
     </div>

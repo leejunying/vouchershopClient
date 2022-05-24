@@ -6,7 +6,7 @@ import { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-
+import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
@@ -60,9 +60,11 @@ const Detail = () => {
               {data["title"]}
             </h2>
             <Grid>
-              {data["categorys"].map((data) => {
-                return <h5>{data.title}</h5>;
-              })}
+              {data["categorys"] != undefined
+                ? data["categorys"].map((data) => {
+                    return <h5>{data.title}</h5>;
+                  })
+                : null}
             </Grid>
 
             <Grid>

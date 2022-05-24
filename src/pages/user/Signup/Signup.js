@@ -17,7 +17,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Link as LInk } from "react-router-dom";
 import MuiPhoneNumber from "material-ui-phone-number";
-
+import { Request_User } from "../../../API/api";
+import axios from "axios";
 function Copyright(props) {
   return (
     <Typography
@@ -58,10 +59,33 @@ export default function SignUp() {
     phone: yup
       .string()
       .required("Vui lòng nhập SDT")
-      .max(11, "maxium phone number is 11"),
+      .max(11, "maxium phone number is 11")
+      .matches(
+        /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
+        "Số điện thoại không hợp lệ!",
+      ),
   });
   const onSubmit = (data) => {
-    console.log(errors);
+    console.log(data);
+
+    console.log(Request_User.register);
+
+    if (data) {
+      delete data.confirmPassword;
+
+      console.log(data);
+
+      axios
+        .post(Request_User.register, data)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      console.log(errors);
+    }
   };
   const {
     register,
@@ -70,8 +94,7 @@ export default function SignUp() {
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
-
-   return (
+  return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -147,6 +170,20 @@ export default function SignUp() {
                   helperText={errors.confirmPassword?.message}
                 />
               </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="phone"
+                  label="SDT"
+                  type="string"
+                  id="phone"
+                  {...register("phone")}
+                  FormHelperTextProps={{ style: { color: "red" } }}
+                  helperText={errors.phone?.message}
+                />
+              </Grid>
+
               <Grid item xs={12}></Grid>
             </Grid>
             <Button

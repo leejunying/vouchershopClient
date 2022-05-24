@@ -14,6 +14,7 @@ export const cartSlice = createSlice({
     valueitems: 0,
     totalamount: 0,
   },
+
   reducers: {
     addItem: (state, action) => {
       state.items = [...state.items, action.payload];
@@ -34,13 +35,13 @@ export const cartSlice = createSlice({
 
     increaseItem: (state, action) => {
       state.items.map((item, indx) => {
-        if (item.key == action.payload) item.value++;
+        if (item.key == action.payload.key) item.value++;
       });
     },
 
     decreaseItem: (state, action) => {
       state.items.map((item, indx) => {
-        if (item.key === action.payload) {
+        if (item.key === action.payload.key) {
           if (item.value > 1) item.value--;
         }
       });
@@ -49,7 +50,7 @@ export const cartSlice = createSlice({
     //Get action index to remove
     removeItem: (state, action) => {
       state.items = state.items.filter((item, indx) => {
-        return indx != action.payload;
+        return item.key != action.payload.key;
       });
     },
   },
