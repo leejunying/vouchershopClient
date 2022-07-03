@@ -11,26 +11,10 @@ export const cartSlice = createSlice({
   // delivery is information delivery if
   initialState: {
     items: [],
-    valueitems: 0,
-    totalamount: 0,
   },
-
   reducers: {
     addItem: (state, action) => {
       state.items = [...state.items, action.payload];
-      //plus  value
-
-      state.items.map((item, indx) => {
-        if (item.key == action.payload.key) {
-          item.value++;
-        }
-      });
-
-      if (state.items.length > 0) {
-        const removedup = Commonfc.removeDuplicate(state.items, "key");
-
-        state.items = [...removedup];
-      }
     },
 
     // increaseItem: (state, action) => {
@@ -50,9 +34,14 @@ export const cartSlice = createSlice({
 
     //Get action index to remove
     removeItem: (state, action) => {
-      state.items = state.items.filter((item, indx) => {
-        return item.key != action.payload.key;
-      });
+      if (state.items.length == 1) {
+        state.items = [];
+      }
+      if (state.items.length > 1) {
+        state.items = state.items.filter((data, indx) => {
+          return indx != action.payload;
+        });
+      }
     },
   },
 });

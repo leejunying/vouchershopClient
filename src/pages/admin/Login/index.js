@@ -52,9 +52,7 @@ const LoginAdmin = () => {
   return (
     <div
       className="form-login"
-      style={{ backgroundImage: "url(" + Image + ")" }}
-
-    
+      style={{ width: "", backgroundImage: "url(" + Image + ")" }}
     >
       <Redirect
         to={info_Admin["isLogin"] == true ? "/admin/dashboard" : "/admin"}

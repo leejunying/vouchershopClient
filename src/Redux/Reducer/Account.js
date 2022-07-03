@@ -12,6 +12,8 @@ export const accountSlice = createSlice({
       state.Admin = action.payload;
     },
     clientLogin: (state, action) => {
+      console.log(action.payload);
+
       state.Client = action.payload;
     },
     changeAdminDisplay: (state, action) => {

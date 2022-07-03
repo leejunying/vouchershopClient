@@ -5,18 +5,21 @@ import { Request_User } from "../../../../API/api";
 import { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { ConsoleSqlOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { Select } from "antd";
 
 import { Commonfc } from "../../../../Ultis/Commonfunction";
-
+import { addItem } from "../../../../Redux/Reducer/Cart";
+import { useDispatch } from "react-redux";
 const { Option } = Select;
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const Detail = () => {
+  const dispatch = useDispatch();
+
   let { slug } = useParams();
 
   //init value and state
@@ -35,42 +38,38 @@ const Detail = () => {
     //Send By Query ex ?slug=string  ,
 
     axios
-      .get(`${Request_User.voucher}/${slug}`)
+      .get(`${Request_User.findvoucher}/${slug}`)
       .then((res) => {
         setData(res.data);
-
-        // console.log(res.data);
 
         if (res.data["key"] == "CV") {
           setPrice(res.data["price_options"]["price"]);
         }
-        if (res.data["key"] == "HK") {
+        if (res.data["key"] == "DVHK") {
           setPrice(res.data["price_options"]["package"][0].value);
         }
 
-        if (res.data["key"] == "ND" || res.data["key"] == "G") {
+        if (res.data["key"] == "DVND" || res.data["key"] == "G") {
           let value = res.data["price_options"]["duration"][0].value;
 
           setDuration(value);
           setPrice(value);
         }
-        if (res.data["key"] == "LK") {
-          let getRoom = res.data["price_options"]?.room;
-          let getCredit = res.data["price_options"]?.lineofcredit;
+        if (res.data["key"] == "DVLK") {
+          var getRoom = res.data["price_options"]?.room;
+          var getCredit = res.data["price_options"]?.lineofcredit;
 
-          if (getRoom != undefined) {
-            setDuration(getRoom[0].value);
+          if (getRoom.length > 0) {
             setPrice(getRoom[0].value);
+            setDuration(getRoom[0].value);
           }
-          if (getCredit != undefined) {
-            setDuration(getCredit[0].value);
+          if (getCredit.length > 0) {
             setPrice(getCredit[0].value);
+            setDuration(getCredit[0].value);
           }
         }
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => {});
   }, []);
 
   const onChangepackage = (value) => {
@@ -86,7 +85,7 @@ const Detail = () => {
   const onChangeduration = (value) => {
     setDuration(value);
 
-    if (data["key"] == "ND") setPrice(totalND(value, color, room));
+    if (data["key"] == "DVND") setPrice(totalND(value, color, room));
     else setPrice(value);
   };
 
@@ -103,6 +102,20 @@ const Detail = () => {
       parseInt(duration) + parseInt(percentColor) + parseInt(percentRoom);
 
     return result;
+  };
+
+  const addTocart = () => {
+    const itemobj = {
+      title: data.title,
+      img_url: data.img_url,
+      price: price,
+    };
+
+    // console.log(itemobj)
+
+    console.log(data);
+
+    dispatch(addItem(itemobj));
   };
 
   return (
@@ -130,7 +143,7 @@ const Detail = () => {
             <Grid style={{ margin: "20px 20px 20px 0" }}>
               {
                 //Key G
-                data["key"] == "G" ? (
+                data["key"] == "DVG" ? (
                   <Grid container spacing={2} className="flex options">
                     <Grid item={true} xs={2}>
                       Thời hạn
@@ -164,7 +177,7 @@ const Detail = () => {
               {
                 //Key HK
 
-                data["key"] == "HK" ? (
+                data["key"] == "DVHK" ? (
                   <Grid container spacing={2} className="flex options">
                     <Grid item={true} xs={2}>
                       {" "}
@@ -200,7 +213,7 @@ const Detail = () => {
               {
                 //Key ND
 
-                data["key"] == "ND" ? (
+                data["key"] == "DVND" ? (
                   <Grid container spacing={2} className=" flex  options">
                     <Grid item={true} className="flex" xs={10}>
                       <Grid item={true} xs={2}>
@@ -261,7 +274,7 @@ const Detail = () => {
 
                       <Grid item={true} xs={6}>
                         <Select
-                          defaultValue={data["price_options"]["room"][0].value}
+                          defaultValue={data["price_options"]["room"][0].title}
                           style={{ width: "100%" }}
                           placeholder="Choose duration"
                           optionFilterProp="children"
@@ -283,9 +296,9 @@ const Detail = () => {
               {
                 //Key LK
 
-                data["key"] == "LK" ? (
+                data["key"] == "DVLK" ? (
                   <Grid container spacing={2} className=" flex  options">
-                    {data["price_options"]?.lineofcredit != undefined ? (
+                    {data["price_options"]?.lineofcredit.length > 0 ? (
                       <Grid item={true} className="flex" xs={10}>
                         <Grid item={true} xs={2}>
                           Hạn mức
@@ -294,7 +307,7 @@ const Detail = () => {
                         <Grid item={true} xs={6}>
                           <Select
                             defaultValue={
-                              data["price_options"]["lineofcredit"][0].value
+                              data["price_options"].lineofcredit[0].value
                             }
                             style={{ width: "100%" }}
                             placeholder="Choose Credit"
@@ -305,7 +318,7 @@ const Detail = () => {
                               (lineofcredit, indx) => {
                                 return (
                                   <Option key={indx} value={lineofcredit.value}>
-                                    {lineofcredit.title}
+                                    {lineofcredit.title} Tháng
                                   </Option>
                                 );
                               },
@@ -321,9 +334,7 @@ const Detail = () => {
 
                         <Grid item={true} xs={6}>
                           <Select
-                            defaultValue={
-                              data["price_options"]["room"][0].value
-                            }
+                            defaultValue={data.price_options.room[0].value}
                             style={{ width: "100%" }}
                             placeholder="Choose Room"
                             optionFilterProp="children"
@@ -333,13 +344,11 @@ const Detail = () => {
                               (lineofcredit, indx) => {
                                 return (
                                   <Option key={indx} value={lineofcredit.value}>
-                                    {lineofcredit.title}
+                                    {lineofcredit.title} Phòng
                                   </Option>
                                 );
                               },
                             )}
-
-                            {}
                           </Select>
                         </Grid>
                       </Grid>
@@ -363,13 +372,13 @@ const Detail = () => {
               </Grid>{" "}
             </Grid>
 
-            <span>
-              {/* <Rate allowHalf defaultValue={2.5} />
-              <p>9999 view</p> */}
-            </span>
-
             <div className="div_btn">
-              <Button type="primary" block style={{ width: "50%", margin: 10 }}>
+              <Button
+                type="primary"
+                onClick={addTocart}
+                block
+                style={{ width: "50%", margin: 10 }}
+              >
                 Thêm Vào giỏ Hàng
               </Button>
               <Button type="red-7" block style={{ width: "50%", margin: 10 }}>

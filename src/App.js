@@ -17,6 +17,9 @@ import Dashboard from "./pages/admin/Dashboard/Dashboard";
 import SignIn from "./pages/user/Login/index";
 import SignUp from "./pages/user/Signup/Signup";
 import Detail from "./pages/user/Vounchers/Detail/detail";
+import Cart from "./pages/user/Cart/Cart";
+import Notfound from "./pages/user/notfound/notfound";
+import Categorys from "./pages/user/Categorjy/Categorys";
 function App() {
   return (
     <div className="App">
@@ -41,11 +44,13 @@ function App() {
                 <Route path="/lienhe" component={Contacts}></Route>
                 <Route path="/blog" component={Blog}></Route>
                 <Route path="/baiviet/:postid" component={Ariticles}></Route>
-                <Route path="/payment" component={CheckOut}></Route>
+                {/* <Route path="/checkout" component={CheckOut}></Route> */}
                 <Route path="/vouchers/:slug" component={Detail}></Route>
                 <Route path="/login" component={SignIn}></Route>
                 <Route path="/register" component={SignUp}></Route>
-                <Route path=""></Route>
+                <Route path="/cart" component={Cart}></Route>
+                <Route path="/categorys/:type" component={Categorys}></Route>
+                <Route component={Notfound} />
               </Switch>
             </User>
           </Route>

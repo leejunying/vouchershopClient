@@ -1,8 +1,4 @@
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from "react-slick";
 import "./Banner.css";
-
 const Banner = () => {
   const settings = {
     dots: true,
@@ -13,34 +9,69 @@ const Banner = () => {
     autoplay: true,
   };
   return (
-    <div style={{ width: "100%", margin: "25px" }}>
-      <Slider {...settings}>
-        <div className="banner-slide">
-          <img
-            src="https://images.pexels.com/photos/3510717/pexels-photo-3510717.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-            alt="/"
-          />
+    <div className="carWrapper">
+      <div
+        id="carouselExampleIndicators"
+        className="carousel slide"
+        data-ride="carousel"
+      >
+        <ol className="carousel-indicators">
+          <li
+            data-target="#carouselExampleIndicators"
+            data-slide-to="0"
+            className="active"
+          ></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div className="carousel-inner">
+          <div className="carousel-item active">
+            <img
+              className="d-block w-100"
+              src="https://promacprinting.com/wp-content/uploads/2021/03/voucher-du-lich.jpg"
+              alt="First slide"
+            />
+          </div>
+          <div className="carousel-item">
+            <img
+              className="d-block w-100"
+              src="https://www.dulichthuyphico.com/uploads/plugin/products/827/1617848264-1428899477-3n2-phong-villa-vinpearl-luxury-a-n-ng-vinpearl-resort-amp-spa-a-n-ng-n-sang-t-ng-a-on-san-bay-cho-02-ng-i-va-2-tr-em-d-i-4-tu-i.jpg"
+              alt="Second slide"
+            />
+          </div>
+          <div className="carousel-item">
+            <img
+              className="d-block w-100"
+              src="https://songhantourist.com/upload/articles-images/images/san-combo-gia-re-kich-cau-du-lich.png"
+              alt="Third slide"
+            />
+          </div>
         </div>
-
-        <div className="banner-slide">
-          <img
-            src="https://images.pexels.com/photos/8075962/pexels-photo-8075962.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-            alt="/"
-          />
-        </div>
-        <div className="banner-slide">
-          <img
-            src="https://images.pexels.com/photos/1094231/pexels-photo-1094231.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-            alt="/"
-          />
-        </div>
-        <div className="banner-slide">
-          <img
-            src="https://images.pexels.com/photos/290527/pexels-photo-290527.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-            alt="/"
-          />
-        </div>
-      </Slider>
+        <a
+          className="carousel-control-prev"
+          href="#carouselExampleIndicators"
+          role="button"
+          data-slide="prev"
+        >
+          <span
+            className="carousel-control-prev-icon"
+            aria-hidden="true"
+          ></span>
+          <span className="sr-only">Previous</span>
+        </a>
+        <a
+          className="carousel-control-next"
+          href="#carouselExampleIndicators"
+          role="button"
+          data-slide="next"
+        >
+          <span
+            className="carousel-control-next-icon"
+            aria-hidden="true"
+          ></span>
+          <span className="sr-only">Next</span>
+        </a>
+      </div>
     </div>
   );
 };

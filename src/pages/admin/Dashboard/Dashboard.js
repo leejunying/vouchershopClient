@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "antd/dist/antd.css";
 import { Layout, Menu, Breadcrumb } from "antd";
 import {
   UserOutlined,
-  LaptopOutlined,
   NotificationOutlined,
   DollarOutlined,
   FileWordOutlined,
@@ -14,6 +13,7 @@ import "../admin.main.css";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import Addproduct from "../Products/Addnew";
+import ListVouchers from "../Products/List";
 
 const { Header, Content, Sider } = Layout;
 
@@ -80,7 +80,6 @@ const Dashboard = () => {
   // console.log(info_Admin);
 
   //State
-
   const [selected, setSelected] = useState(1);
 
   const onClickMenu = (e) => {
@@ -89,18 +88,19 @@ const Dashboard = () => {
     console.log(selected);
   };
 
-  const renderSwitch = () => {
-    switch (selected) {
-      case 1:
-        return <Addproduct></Addproduct>;
-      default:
-        return <Addproduct></Addproduct>;
-    }
+  //State update
+
+  const renderSwitch = (key) => {
+    console.log(key);
+
+    if (key == 1) return <ListVouchers></ListVouchers>;
+    if (key == 2) return <Addproduct></Addproduct>;
   };
 
   return (
     <Layout
       style={{
+        minWidth: "100vw",
         minHeight: "100vh",
       }}
     >
@@ -125,11 +125,7 @@ const Dashboard = () => {
             theme="dark"
           />
         </Sider>
-        <Layout
-          style={{
-            padding: "20px",
-          }}
-        >
+        <Layout style={{}}>
           <Content
             theme="dark"
             className="site-layout-background"
@@ -139,7 +135,7 @@ const Dashboard = () => {
               minHeight: 280,
             }}
           >
-            {renderSwitch()}
+            {renderSwitch(selected)}
           </Content>
         </Layout>
       </Layout>

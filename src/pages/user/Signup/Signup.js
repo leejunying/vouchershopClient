@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Link as LInk } from "react-router-dom";
+import { Link as LInk, Redirect } from "react-router-dom";
 import MuiPhoneNumber from "material-ui-phone-number";
 import { Request_User } from "../../../API/api";
 import axios from "axios";
@@ -40,6 +40,13 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignUp() {
+  const [islogin, setIslogin] = React.useState(false);
+  const [errorstring, setErrorstring] = React.useState({
+    username: "",
+    email: "",
+    phone: "",
+  });
+
   const schema = yup.object().shape({
     username: yup
       .string()
@@ -55,7 +62,21 @@ export default function SignUp() {
       .string()
       .required("Vui lòng xác nhận mật khẩu")
       .oneOf([yup.ref("password"), null], "Mật khẩu không khớp"),
-    email: yup.string().required("Vui lòng nhập vào email"),
+    email: yup
+      .string()
+      .required("Vui lòng nhập vào email")
+      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email không hợp lệ"),
+    firstname: yup
+      .string()
+      .required("Vui lòng nhập họ ")
+      .min(2, "Họ có từ 2-20 kí tự!")
+      .max(20, "Họ có từ 2-20 kí tự!"),
+    lastname: yup
+      .string()
+      .required("Vui lòng nhập tên ")
+      .min(2, "Tên có từ 2-50 kí tự!")
+      .max(50, "Tên có từ 2-50 kí tự!"),
+
     phone: yup
       .string()
       .required("Vui lòng nhập SDT")
@@ -66,22 +87,30 @@ export default function SignUp() {
       ),
   });
   const onSubmit = (data) => {
-    console.log(data);
-
-    console.log(Request_User.register);
-
     if (data) {
       delete data.confirmPassword;
-
-      console.log(data);
 
       axios
         .post(Request_User.register, data)
         .then((res) => {
-          console.log(res);
+          if (res.status == 200) {
+            setIslogin(true);
+          }
         })
         .catch((err) => {
           console.log(err);
+
+          let title = err?.response.data.title;
+          let mes = err?.response.data.message;
+
+          if (title == "username")
+            setErrorstring({ ...errorstring, username: mes });
+          if (title == "phone") setErrorstring({ ...errorstring, phone: mes });
+          if (title == "email")
+            setErrorstring({
+              ...errorstring,
+              email: mes,
+            });
         });
     } else {
       console.log(errors);
@@ -96,6 +125,7 @@ export default function SignUp() {
 
   return (
     <ThemeProvider theme={theme}>
+      <Redirect to={islogin == true ? "/login" : "/register"}></Redirect>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -128,8 +158,41 @@ export default function SignUp() {
                   autoComplete="username"
                   {...register("username")}
                   FormHelperTextProps={{ style: { color: "red" } }}
-                  helperText={errors.username?.message}
+                  helperText={
+                    errorstring.username != ""
+                      ? errorstring.username
+                      : errors.username?.message
+                  }
                 />
+              </Grid>
+              <Grid item={true} className="flex" xs={12}>
+                <Grid item={true} xs={4}>
+                  {" "}
+                  <TextField
+                    required
+                    fullWidth
+                    id="firstname"
+                    label="First name"
+                    name="firstname"
+                    autoComplete="firstname"
+                    {...register("firstname")}
+                    FormHelperTextProps={{ style: { color: "red" } }}
+                    helperText={errors.firstname?.message}
+                  />
+                </Grid>
+                <Grid item={true} xs={8}>
+                  <TextField
+                    required
+                    fullWidth
+                    id="lastname"
+                    label="Last name"
+                    name="lastname"
+                    autoComplete="lastname"
+                    {...register("lastname")}
+                    FormHelperTextProps={{ style: { color: "red" } }}
+                    helperText={errors.lastname?.message}
+                  />
+                </Grid>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -167,7 +230,11 @@ export default function SignUp() {
                   id="email"
                   {...register("email")}
                   FormHelperTextProps={{ style: { color: "red" } }}
-                  helperText={errors.confirmPassword?.message}
+                  helperText={
+                    errorstring.email != ""
+                      ? errorstring.email
+                      : errors.email?.message
+                  }
                 />
               </Grid>
               <Grid item xs={12}>
@@ -180,7 +247,11 @@ export default function SignUp() {
                   id="phone"
                   {...register("phone")}
                   FormHelperTextProps={{ style: { color: "red" } }}
-                  helperText={errors.phone?.message}
+                  helperText={
+                    errorstring.phone != ""
+                      ? errorstring.phone
+                      : errors.phone?.message
+                  }
                 />
               </Grid>
 
@@ -197,7 +268,7 @@ export default function SignUp() {
           </Box>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <LInk to="/signin">Đã có tài khoản? Đăng nhập!</LInk>
+              <LInk to="/login">Đã có tài khoản? Đăng nhập!</LInk>
             </Grid>
           </Grid>
         </Box>

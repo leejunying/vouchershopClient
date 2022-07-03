@@ -1,7 +1,11 @@
 .detail-container{
     width: 80%;
-    margin: 0 auto;
+    margin: 0 20px 0 0 ;
     border: 1px solid #ededed;
+    max-height: 800px;
+
+
+     scroll-behavior: smooth;
 }
 
 

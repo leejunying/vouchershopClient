@@ -15,13 +15,16 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { Link as LInk } from "react-router-dom";
+import { Link as LInk, Redirect } from "react-router-dom";
 import axios from "axios";
 import { Request_User } from "../../../API/api";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { clientLogin } from "../../../Redux/Reducer/Account";
-import { SettingsInputAntennaTwoTone, SettingsSystemDaydreamSharp } from "@mui/icons-material";
+import {
+  SettingsInputAntennaTwoTone,
+  SettingsSystemDaydreamSharp,
+} from "@mui/icons-material";
 import { Commonfc } from "../../../Ultis/Commonfunction";
 import { setAutoFreeze } from "immer";
 
@@ -47,6 +50,8 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+  const [islogin, setIslogin] = React.useState(false);
+
   const info_client = useSelector((state) => state["account"]["Client"]);
   const dispatch = useDispatch();
 
@@ -79,6 +84,8 @@ export default function SignIn() {
         .then((res) => {
           if (res.status == 200) {
             dispatch(clientLogin(res.data));
+
+            setTimeout(setIslogin(true), 1000);
           }
         })
         .catch((err) => {
@@ -87,11 +94,9 @@ export default function SignIn() {
     }
   };
 
- 
-  
-
   return (
     <ThemeProvider theme={theme}>
+      <Redirect to={islogin == true ? "/" : "/login"}></Redirect>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
         <Grid

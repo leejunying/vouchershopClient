@@ -1,0 +1,6 @@
+.UserPage {
+    font-size: 2em;
+    max-width: 1200px !important;
+    display: flex;
+    justify-content: center;
+}
