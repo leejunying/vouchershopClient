@@ -9,7 +9,7 @@ import User from "./pages/user";
 import Admin from "./pages/admin";
 import Home from "./pages/user/Home/Home";
 import Contacts from "./pages/user/Contacts";
-import Ariticles from "./pages/user/Ariticles/Detail";
+import Articles from "./pages/user/Articles/Detail";
 import LoginAdmin from "./pages/admin/Login";
 import Blog from "./pages/user/Blog/index";
 import CheckOut from "./pages/user/CheckOut/CheckOut";
@@ -25,7 +25,7 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
-          <Route path={"/admin/:path?"} exact>
+          <Route path={"/admin/:path?"}>
             <Admin>
               <Switch>
                 <Route path={"/admin"} exact component={LoginAdmin}></Route>
@@ -43,7 +43,7 @@ function App() {
                 <Route path="/" exact component={Home}></Route>
                 <Route path="/lienhe" component={Contacts}></Route>
                 <Route path="/blog" component={Blog}></Route>
-                <Route path="/baiviet/:postid" component={Ariticles}></Route>
+                <Route path="/baiviet/:postid" component={Articles}></Route>
                 {/* <Route path="/checkout" component={CheckOut}></Route> */}
                 <Route path="/vouchers/:slug" component={Detail}></Route>
                 <Route path="/login" component={SignIn}></Route>

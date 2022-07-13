@@ -9,6 +9,7 @@ import {
   LaptopOutlined,
   NotificationOutlined,
 } from "@ant-design/icons";
+import { Request_User } from "../../../API/api";
 import CardItem from "../Vounchers/Card";
 
 const { Content, Footer, Sider } = Layout;
@@ -41,31 +42,17 @@ const Categorys = () => {
 
   const { type } = useParams();
 
-  let search = "combovouchers";
-
-  if (type === "dichvulienket") {
-    search = "DVLK";
-  }
-  if (type === "dichvunghiduong") {
-    search = "DVND";
-  }
-  if (type === "combovouchers") {
-    search = "CV";
-  }
-  if (type === "dichvuhangkhong") {
-    search = "DVHK";
-  }
-
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/category?key=${search}&page=1`)
+      .get(`${Request_User.filtervoucher(type, 1)}`)
       .then((res) => {
         if (res.status === 200) {
-          setData(res.data);
+          console.log(res);
+          // setData(res.data);
         }
       })
       .catch((res) => console.log(res));
-  }, [search]);
+  }, [type]);
 
   // reanderItems
   const renderItems = () => {

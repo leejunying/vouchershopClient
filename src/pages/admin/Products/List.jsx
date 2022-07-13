@@ -9,116 +9,112 @@ import { Request_Admin } from "../../../API/api";
 import { Select } from "antd";
  import { Alert, Spin } from 'antd';
 import { useState } from "react";
+import Addproduct from"./Addnew"
+const { Option } = Select;
+
+
+const ListVouchers = () => {
+
+const [updateok,setUpdateok] = useState(false)
+
+const [isupdate,setIsupdate] = useState(false)
+
+const [selectitem,setSelectitem] = useState({})
+
+const [data,setData]=useState([])
+
+useEffect(()=>{
+  axios.get(`${Request_Admin.getAllvoucher}`).then(res=>{
+    if(res.status==200){   
+      setData(res.data)
+    }
+  })
+},[])
+
+useEffect(() => {
+  console.log("data updated")
+}, [data])
 
 const columns = [
- 
   {
     title: 'TITLE',
     dataIndex: 'title',
-    key: 'title',
-    
+    key: "title"
+     
   },
   {
     title: 'STATUS',
     dataIndex: 'status',
-    key: 'status',
-  },
+    key: "status"
+   },
   {
 
     title:'CATEGORY',
     dataIndex:'key',
-    },
-    {
-      title:'TAG',
-      dataIndex:'categorys',
-      key:'categorys',
-      
-      render: (_,record) => (
+    key: "key"
+  },
+  {
+    title:'TAG',
+    dataIndex:'categorys',
+    key: "tag",
+    render: (_,record) => (
       <span>
-        {record.categorys.map((tag) => {
-     
+        {record.categorys.map((tag, index) => {
           return (
-            <Tag  key={tag}>
+            <Tag key={`record_${record.id}_key_tag_${index}`}>
               {tag.title}
             </Tag>
           );
         })}
-      </span>)},
-
-    
-
-    
+      </span>
+    )
+  },
   {
     title: 'IMAGE',
+    key: "image",
     dataIndex: 'img_url',
     render: (_, record) => (
       <Space size="middle">
        <img style={{width:"80px", height:"80px"}} src={record.img_url}></img>
      </Space>
-    ),
-   },
- 
+    )
+  },
   {
-
     title:'ACTION',
     key:'action',
-    render: (_, record) => (
+    render: (_, item) => (
       <Space size="middle">
-      <FontAwesomeIcon
-      style={{ cursor: "pointer" }}
-      icon={faPenNib}
-      id="icon"
-      className="d-flex align-items-center"
-      />
-    <FontAwesomeIcon
-     style={{ cursor: "pointer" }}
-     icon={faTrashCan}
-     id="icon"
-    className="d-flex align-items-center"
-     />
-     </Space>
+        <FontAwesomeIcon
+          onClick={()=> onClickUpdate(item)}
+          style={{ cursor: "pointer" }}
+          icon={faPenNib}
+          id="icon"
+          className="d-flex align-items-center"
+        />
+        <FontAwesomeIcon
+          style={{ cursor: "pointer" }}
+          icon={faTrashCan}
+          id="icon"
+          className="d-flex align-items-center"
+        />
+      </Space>
     ),
   },
 
 
 ]
+  const onClickUpdate = (item) => {
+    console.log("selected",item)
 
-const ListVouchers = () => {
+    setSelectitem(item)
+    setIsupdate(true)   
+  }
 
-  //init antd
-  const { Option } = Select;
-  const [data,setData]=useState()
-  useEffect(()=>{
+  if(!!isupdate) {
+    return <Addproduct backtoList={()=>setIsupdate(false)} item={selectitem}/> 
+  }
+  return <Table dataSource={data} columns={columns}></Table>
 
-    axios.get(`${Request_Admin.getallvoucher}`).then(res=>{
-
-
-      if(res.status==200)
-      {   
-
- 
-         setData(res.data)
-      }
-
-    })
-
-
-  },[])
-
-  return <Grid className="List-vouchers">
-      <Grid className="Navbar">
-       
-
-      </Grid>
-      { 
-    
-        data==undefined?<Spin></Spin>: 
-            <Table dataSource={data}     columns={columns}  ></Table>
-
-        
-      
-      }
-      </Grid>
 };
 
 export default ListVouchers;

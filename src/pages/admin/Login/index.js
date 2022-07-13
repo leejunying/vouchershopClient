@@ -26,6 +26,7 @@ const LoginAdmin = () => {
   const dispatch = useDispatch();
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
 
+  console.log(info_Admin);
   // To disable submit button at the beginning.
   useEffect(() => {
     forceUpdate({});
@@ -39,12 +40,12 @@ const LoginAdmin = () => {
       if (response) {
         dispatch(adminLogin(response.data));
 
-        let changeurl = "/admin/dashboard";
-        history.push(changeurl);
+        // let changeurl = "/admin/dashboard";
+        // history.push(changeurl);
 
-        let cookie = Cookies.get("refreshToken");
+        // let cookie = Cookies.get("refreshToken");
 
-        console.log(cookie);
+        // console.log(cookie);
       }
     });
   };
@@ -55,7 +56,7 @@ const LoginAdmin = () => {
       style={{ width: "", backgroundImage: "url(" + Image + ")" }}
     >
       <Redirect
-        to={info_Admin["isLogin"] == true ? "/admin/dashboard" : "/admin"}
+        to={info_Admin["isAdmin"] == true ? "/admin/dashboard" : "/admin"}
       ></Redirect>
       <div className="">
         <h1>welcome to page admin</h1>

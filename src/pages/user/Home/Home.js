@@ -16,6 +16,9 @@ import CardItem from "../Vounchers/Card/index";
 import axios from "axios";
 import "./Home.css";
 import { Request_User } from "../../../API/api";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
+
 const Home = () => {
   //define using
   const dispatch = useDispatch();
@@ -67,10 +70,103 @@ const Home = () => {
         <Banner></Banner>
       </section>
       <section className="Main-menu">
-        <Link to="/categorys/dichvulienket">dichvulienket</Link>
-        <Link to="/categorys/dichvunghiduong">dichvunghiduong</Link>
-        <Link to="/categorys/dichvulienket">combovouchers</Link>
-        <Link to="/categorys/dichvulienket">dichvuhangkhong</Link>
+        <Grid
+          style={{ margin: "15px" }}
+          display={"flex"}
+          container
+          justifyContent={"center"}
+        >
+          <Grid item={true} md={2}>
+            {" "}
+            <Link to="/categorys/CV">
+              <Grid
+                className="item"
+                direction="column"
+                alignItems={"center"}
+                display={"flex"}
+                justifyContent="center"
+              >
+                <img
+                  style={{ width: "100px", height: "100px" }}
+                  src="./gift-voucher.png"
+                ></img>
+                <small>COMBO VOUCHERS</small>
+              </Grid>
+            </Link>
+          </Grid>
+          <Grid item={true} md={2}>
+            {" "}
+            <Link to="/categorys/DVND">
+              <Grid
+                className="item"
+                display={"flex"}
+                justifyContent="center"
+                direction="column"
+                alignItems={"center"}
+              >
+                <img
+                  style={{ width: "100px", height: "100px" }}
+                  src="./island.png"
+                ></img>
+                <small>DỊCH VỤ NGHỈ DƯỠNG</small>
+              </Grid>
+            </Link>
+          </Grid>
+          <Grid item={true} md={2}>
+            {" "}
+            <Link to="/categorys/DVHK">
+              <Grid
+                className="item"
+                display={"flex"}
+                direction="column"
+                justifyContent="center"
+                alignItems={"center"}
+              >
+                <img
+                  style={{ width: "100px", height: "100px" }}
+                  src="./world.png"
+                ></img>
+                <small>DỊCH VỤ HÀNG KHÔNG</small>
+              </Grid>
+            </Link>
+          </Grid>
+          <Grid item={true} md={2}>
+            {" "}
+            <Link to="/categorys/DVLK">
+              <Grid
+                className="item"
+                display={"flex"}
+                direction="column"
+                alignItems={"center"}
+                justifyContent="center"
+              >
+                <img
+                  style={{ width: "100px", height: "100px" }}
+                  src="./credit.png"
+                ></img>
+                <small>DỊCH VỤ LIÊN KẾT</small>
+              </Grid>
+            </Link>
+          </Grid>
+          <Grid item={true} md={2}>
+            {" "}
+            <Link to="/categorys/DVG">
+              <Grid
+                className="item"
+                display={"flex"}
+                direction="column"
+                alignItems={"center"}
+                justifyContent="center"
+              >
+                <img
+                  style={{ width: "100px", height: "100px" }}
+                  src="./golf.png"
+                ></img>
+                <small>DỊCH VỤ GOLF</small>
+              </Grid>
+            </Link>
+          </Grid>
+        </Grid>
       </section>
       <section className="Vouchers-box">
         {topvoucher ? (

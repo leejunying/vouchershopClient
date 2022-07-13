@@ -23,7 +23,7 @@ const items2 = [
     titleName: "Vouchers",
     child: [
       { subKey: "1", sublabel: "Danh sách" },
-      { subKey: "2", sublabel: "Thêm mới Voucher & Category" },
+      { subKey: "2", sublabel: "Thêm mới Voucher" },
     ],
   },
   {
@@ -91,8 +91,6 @@ const Dashboard = () => {
   //State update
 
   const renderSwitch = (key) => {
-    console.log(key);
-
     if (key == 1) return <ListVouchers></ListVouchers>;
     if (key == 2) return <Addproduct></Addproduct>;
   };

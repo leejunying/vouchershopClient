@@ -16,6 +16,11 @@ export const accountSlice = createSlice({
 
       state.Client = action.payload;
     },
+
+    clientLogOut: (state, action) => {
+      state.Client = {};
+    },
+
     changeAdminDisplay: (state, action) => {
       state.Admin = { ...action.payload };
     },

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Cart.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,16 +10,31 @@ import {
   CheckboxGroup,
 } from "@createnl/grouped-checkboxes";
 import { useDispatch, useSelector } from "react-redux";
-import { removeItem } from "../../../Redux/Reducer/Cart";
+import { removeItem, clearItems } from "../../../Redux/Reducer/Cart";
 import { Button } from "antd";
 import { Grid, TextField } from "@mui/material";
 import { Select, InputNumber } from "antd";
-import Map from "../../../Components/Heremap/map";
-function Cart() {
+import PaypalButton from "./Paypal";
+import location from "./../../../Ultis/local.json";
+
+const Cart = () => {
   const { Option } = Select;
 
-  const [checkout, setCheckout] = useState({});
+  const ArrLocation = [...location];
 
+  //information State
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [address, setAddress] = useState("");
+
+  //////////////
+  const [isCheckOut, setIsCheckOut] = useState(false);
+
+  const [location1, setLocation1] = useState("Hồ Chí Minh");
+  const [location2, setLocation2] = useState("Bình Chánh");
+  const [location3, setLocation3] = useState("An Phú Tây");
+
+  const [selectopt, setSelectopt] = useState("COD");
   const data = useSelector((state) => (state = state.cart.items));
   const total = data
     .map((data) => {
@@ -50,6 +65,56 @@ function Cart() {
       setPicked(takeList);
     }
   };
+
+  //Catch Location
+  useEffect(() => {
+    setLocation2(LoadL2()[0].name);
+    setLocation3(LoadL2()[0].wards[0].name);
+  }, [location1]);
+
+  const onChangeFname = (e) => {
+    setFname(e.target.value);
+  };
+  const onChangeLname = (e) => {
+    setLname(e.target.value);
+  };
+
+  const onChangeAddress = (e) => {
+    setAddress(e.target.value);
+  };
+
+  const onChangeL1 = (value) => {
+    setLocation1(value);
+  };
+
+  const LoadL2 = () => {
+    let resultL2 = ArrLocation.filter((item) => {
+      return item.name == location1;
+    })[0].districts;
+    // console.log("L2", resultL2);
+    return resultL2;
+  };
+
+  const onChangeL2 = (value) => {
+    setLocation2(value);
+  };
+
+  const onChangeL3 = (value) => {
+    setLocation3(value);
+  };
+
+  const onChangeCheckOut = (value) => {
+    setSelectopt(value);
+  };
+
+  const CheckOut = () => {
+    setIsCheckOut(true);
+
+    setFname(user.firstname);
+    setLname(user.lastname);
+    setAddress(user.address);
+  };
+
   const handleCheckAll = (e) => {
     if (e.target.checked == true) {
       //do whatever you want with isChecked value
@@ -59,10 +124,7 @@ function Cart() {
   };
 
   const activeCheckoutbtn = () => {
-    console.log(user);
-    if (user != undefined) {
-      return false;
-    } else return true;
+    return user != undefined ? false : true;
   };
 
   return (
@@ -168,55 +230,148 @@ function Cart() {
                       </span>
                     </div>
                   </div>
-                  <Button
-                    disabled={activeCheckoutbtn()}
-                    className="btn btn-secondary  col-12"
-                  >
-                    Xác nhận giỏ hàng
-                  </Button>
-                  {activeCheckoutbtn() == true ? (
-                    <p>Bạn cần đặng nhập để thanh toán</p>
-                  ) : null}
+
+                  <Grid item={true}>
+                    {data.length > 0 ? (
+                      <Grid item={true}>
+                        {" "}
+                        <Button
+                          onClick={CheckOut}
+                          disabled={activeCheckoutbtn()}
+                          className="btn btn-secondary  col-12"
+                        >
+                          Xác nhận giỏ hàng
+                        </Button>
+                        {activeCheckoutbtn() == true ? (
+                          <p>Bạn cần đặng nhập để thanh toán</p>
+                        ) : null}{" "}
+                      </Grid>
+                    ) : (
+                      <p>Chưa chọn sản phẩm nào</p>
+                    )}
+                  </Grid>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <Grid
-          md={8}
-          spacing={4}
-          container
-          style={{ flexDirection: "column" }}
-          className="flex fcol checkout"
-        >
-          <h3>Thông tin thanh toán</h3>
-          <Grid md={12} className="flex" item={true}>
-            <TextField label="Họ"></TextField>
-            <TextField label="Tên"></TextField>
+
+        {isCheckOut == true ? (
+          <Grid
+            spacing={4}
+            container
+            style={{ flexDirection: "column" }}
+            className="flex fcol checkout"
+          >
+            <h3>Thông tin thanh toán</h3>
+            <Grid md={12} display="flex" item={true}>
+              <TextField
+                style={{ marginRight: "10px" }}
+                label="Họ"
+                onChange={onChangeFname}
+                value={fname}
+              ></TextField>
+              <TextField
+                label="Tên"
+                onChange={onChangeLname}
+                value={lname}
+              ></TextField>
+            </Grid>
+            <Grid md={12} display="flex" item={true}>
+              <Grid style={{ marginRight: "10px" }} item={true} md={4}>
+                <h6>Tỉnh/thành phố</h6>
+                <Select
+                  onChange={onChangeL1}
+                  defaultValue="Hồ Chí Minh"
+                  placeholder="Tỉnh / thành phố"
+                  style={{ width: "100%" }}
+                >
+                  {ArrLocation.map((province) => {
+                    return (
+                      <Option key={province} value={province.name}>
+                        {province.name}
+                      </Option>
+                    );
+                  })}
+                </Select>
+              </Grid>
+
+              <Grid style={{ marginRight: "10px" }} md={4} item={true}>
+                <h6>Quận / huyện</h6>
+                <Select
+                  value={location2}
+                  onChange={onChangeL2}
+                  placeholder="Quận/huyện"
+                  style={{ width: "100%" }}
+                >
+                  {LoadL2() != undefined
+                    ? LoadL2().map((districts) => {
+                        return (
+                          <Option key={districts} value={districts.name}>
+                            {districts.name}
+                          </Option>
+                        );
+                      })
+                    : null}
+                </Select>
+              </Grid>
+              <Grid item={true} md={3}>
+                <h6>Phường / xã</h6>
+                <Select
+                  value={location3}
+                  onChange={onChangeL3}
+                  placeholder="Phường/xã"
+                  style={{ width: "100%" }}
+                >
+                  {LoadL2() != undefined
+                    ? LoadL2()[0].wards.map((item) => {
+                        return (
+                          <Option key={item} value={item.name}>
+                            {item.name}
+                          </Option>
+                        );
+                      })
+                    : null}
+                </Select>
+              </Grid>
+            </Grid>
+            <Grid md={8} item={true}>
+              <TextField
+                value={address}
+                onChange={onChangeAddress}
+                style={{ width: "100%" }}
+                label="Dịa chỉ"
+              ></TextField>
+            </Grid>
+            <Grid md={8} item={true}>
+              <h4>Hình thức thanh toán</h4>
+              <Select
+                onChange={onChangeCheckOut}
+                defaultValue={"COD"}
+                placeholder="option"
+                style={{ width: "100%" }}
+              >
+                <Option value="PAYPAL">Paypal</Option>
+                <Option value="COD">COD</Option>
+              </Select>
+            </Grid>
+
+            <Grid md={6} item={true}>
+              {selectopt == "PAYPAL" ? (
+                <PaypalButton
+                  total={total}
+                  cart={data}
+                  user={user}
+                ></PaypalButton>
+              ) : (
+                <button>CHECKOUT</button>
+              )}
+            </Grid>
           </Grid>
-          <Grid md={12} className="flex" item={true}>
-            <TextField label="Tỉnh/thành phố"></TextField>
-            <TextField label="Quận/huyện"></TextField>
-            <TextField label="Phường/xã"></TextField>
-          </Grid>
-          <Grid md={8} item={true}>
-            <TextField style={{ width: "100%" }} label="Dịa chỉ"></TextField>
-          </Grid>
-          <Grid md={8} item={true}>
-            <h4>Hình thức thanh toán</h4>
-            <Select
-              defaultValue={"cod"}
-              placeholder="option"
-              style={{ width: "100%" }}
-            >
-              <Option value="paypal">Paypal</Option>
-              <Option value="cod">COD</Option>
-            </Select>
-          </Grid>
-        </Grid>
+        ) : null}
       </div>
     </div>
   );
-}
+};
 
 export default Cart;

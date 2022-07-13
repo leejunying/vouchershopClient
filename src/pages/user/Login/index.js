@@ -85,7 +85,7 @@ export default function SignIn() {
           if (res.status == 200) {
             dispatch(clientLogin(res.data));
 
-            setTimeout(setIslogin(true), 1000);
+            setTimeout(setIslogin(true), 1500);
           }
         })
         .catch((err) => {
