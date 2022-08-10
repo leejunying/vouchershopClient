@@ -1,7 +1,7 @@
 import "./detail.css";
 import { Row, Col, Image, Rate, Checkbox, Button } from "antd";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
-import { Request_User } from "../../../../API/api";
+import { Request_User, Request_Admin } from "../../../../API/api";
 import { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import { Spin } from "antd";
@@ -13,16 +13,30 @@ import { Select } from "antd";
 import { Commonfc } from "../../../../Ultis/Commonfunction";
 import { addItem } from "../../../../Redux/Reducer/Cart";
 import { useDispatch } from "react-redux";
+import zIndex from "@mui/material/styles/zIndex";
+import { Tabs } from "antd";
+const { TabPane } = Tabs;
+
 const { Option } = Select;
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const Detail = () => {
+  //antd tab
+
+  window.scrollTo(0, 0);
+
   const dispatch = useDispatch();
 
   let { slug } = useParams();
 
+  useEffect(() => {}, [slug]);
+
   //init value and state
+
+  const [tab, setTab] = useState("detail");
+
+  const [post, setPost] = useState([]);
 
   const [data, setData] = useState({});
 
@@ -34,9 +48,23 @@ const Detail = () => {
 
   const [duration, setDuration] = useState(0);
 
-  useEffect(() => {
-    //Send By Query ex ?slug=string  ,
+  const displaydetailByType = (type) => {
+    if (post.length > 0) {
+      return post.filter((item) => {
+        return item.type == type;
+      })[0].content;
+    }
+  };
 
+  const getdetail = () => {
+    axios
+      .get(`${Request_Admin.getDetailpostByVoucherid(data._id)}`)
+      .then((res) => {
+        if (res.status == 200) setPost(res.data);
+      });
+  };
+
+  const getdata = () => {
     axios
       .get(`${Request_User.findvoucher}/${slug}`)
       .then((res) => {
@@ -56,21 +84,26 @@ const Detail = () => {
           setPrice(value);
         }
         if (res.data["key"] == "DVLK") {
-          var getRoom = res.data["price_options"]?.room;
-          var getCredit = res.data["price_options"]?.lineofcredit;
+          var getCredit = res.data["price_options"]["duration"][0].value;
 
-          if (getRoom.length > 0) {
-            setPrice(getRoom[0].value);
-            setDuration(getRoom[0].value);
-          }
-          if (getCredit.length > 0) {
-            setPrice(getCredit[0].value);
-            setDuration(getCredit[0].value);
-          }
+          setPrice(getCredit);
+          setDuration(getCredit);
         }
       })
       .catch((err) => {});
-  }, []);
+  };
+
+  useEffect(() => {
+    getdetail();
+  }, [data]);
+
+  useEffect(() => {
+    getdata();
+  }, [slug]);
+
+  const onChangeTab = (key) => {
+    setTab(key);
+  };
 
   const onChangepackage = (value) => {
     setPrice(value);
@@ -119,11 +152,20 @@ const Detail = () => {
   };
 
   return (
-    <div className="detail-container">
+    <Grid
+      style={{
+        backgroundColor: "white",
+        minHeight: "600px",
+        marginTop: "20px",
+        position: "relative",
+        zIndex: "1",
+        width: "100%",
+      }}
+    >
       <Suspense fallback={<Spin indicator={antIcon} />}>
-        <Grid container spacing={3} className="flex jus-center">
-          <Grid item={true} xs={4} className="bdflex jus-center">
-            <Image style={{ width: "100%" }} src={data["img_url"]} />
+        <Grid container spacing={1} className=" flex jus-center">
+          <Grid item={true} xs={5} className="flex jus-center">
+            <img style={{ width: "350px" }} src={data.img_url}></img>
           </Grid>
 
           <Grid item={true} xs={7} className="voucher-info ">
@@ -298,81 +340,52 @@ const Detail = () => {
 
                 data["key"] == "DVLK" ? (
                   <Grid container spacing={2} className=" flex  options">
-                    {data["price_options"]?.lineofcredit.length > 0 ? (
-                      <Grid item={true} className="flex" xs={10}>
-                        <Grid item={true} xs={2}>
-                          Hạn mức
-                        </Grid>
-
-                        <Grid item={true} xs={6}>
-                          <Select
-                            defaultValue={
-                              data["price_options"].lineofcredit[0].value
-                            }
-                            style={{ width: "100%" }}
-                            placeholder="Choose Credit"
-                            optionFilterProp="children"
-                            onChange={onChangeduration}
-                          >
-                            {data["price_options"]["lineofcredit"].map(
-                              (lineofcredit, indx) => {
-                                return (
-                                  <Option key={indx} value={lineofcredit.value}>
-                                    {lineofcredit.title} Tháng
-                                  </Option>
-                                );
-                              },
-                            )}
-                          </Select>
-                        </Grid>
+                    <Grid item={true} className="flex" xs={10}>
+                      <Grid item={true} xs={2}>
+                        Hạn mức
                       </Grid>
-                    ) : (
-                      <Grid item={true} className="flex" xs={10}>
-                        <Grid item={true} xs={2}>
-                          Số phòng
-                        </Grid>
 
-                        <Grid item={true} xs={6}>
-                          <Select
-                            defaultValue={data.price_options.room[0].value}
-                            style={{ width: "100%" }}
-                            placeholder="Choose Room"
-                            optionFilterProp="children"
-                            onChange={onChangeduration}
-                          >
-                            {data["price_options"]["room"].map(
-                              (lineofcredit, indx) => {
-                                return (
-                                  <Option key={indx} value={lineofcredit.value}>
-                                    {lineofcredit.title} Phòng
-                                  </Option>
-                                );
-                              },
-                            )}
-                          </Select>
-                        </Grid>
+                      <Grid item={true} xs={6}>
+                        <Select
+                          defaultValue={data["price_options"].duration[0].value}
+                          style={{ width: "100%" }}
+                          placeholder="Choose Credit"
+                          optionFilterProp="children"
+                          onChange={onChangeduration}
+                        >
+                          {data["price_options"].duration.map(
+                            (lineofcredit, indx) => {
+                              return (
+                                <Option key={indx} value={lineofcredit.value}>
+                                  {lineofcredit.title} Tháng
+                                </Option>
+                              );
+                            },
+                          )}
+                        </Select>
                       </Grid>
-                    )}
+                    </Grid>
                   </Grid>
                 ) : null
               }
-              {}
             </Grid>
 
-            <Grid container spacing={2} className="flex col total">
-              <Grid item={true} xs={12}>
-                Total
-              </Grid>
-              <Grid item={true} xs={12}>
-                {" "}
+            <Grid
+              container
+              spacing={1}
+              justifyContent="flex-start"
+              className="flex col total"
+            >
+              <Grid item={true} display="flex" xs={12}>
+                Tổng :{" "}
                 {price != undefined
                   ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
                     "VND"
                   : 0}
-              </Grid>{" "}
+              </Grid>
             </Grid>
 
-            <div className="div_btn">
+            <Grid className="div_btn">
               <Button
                 type="primary"
                 onClick={addTocart}
@@ -384,11 +397,37 @@ const Detail = () => {
               <Button type="red-7" block style={{ width: "50%", margin: 10 }}>
                 Mua Ngay
               </Button>
-            </div>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid
+          style={{ margin: "30px" }}
+          container
+          display="flex"
+          className="tab-voucherdetail"
+        >
+          <Grid item={true} md={6}>
+            <Tabs defaultActiveKey={tab} onChange={onChangeTab}>
+              <TabPane tab="Thông tin chi tiết" key="detail">
+                <Grid
+                  dangerouslySetInnerHTML={{
+                    __html: displaydetailByType(tab),
+                  }}
+                ></Grid>
+                {}
+              </TabPane>
+              <TabPane tab="Chính sách" key="policy">
+                <Grid
+                  dangerouslySetInnerHTML={{
+                    __html: displaydetailByType(tab),
+                  }}
+                ></Grid>
+              </TabPane>
+            </Tabs>
           </Grid>
         </Grid>
       </Suspense>
-    </div>
+    </Grid>
   );
 };
 

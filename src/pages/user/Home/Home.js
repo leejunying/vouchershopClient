@@ -1,8 +1,7 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { Spin } from "antd";
+import { Spin, Button } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import Contacts from "../Contacts";
-
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,27 +17,55 @@ import "./Home.css";
 import { Request_User } from "../../../API/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
-
 const Home = () => {
   //define using
   const dispatch = useDispatch();
   const state = useSelector((state) => (state = state));
-
-  console.log(state);
+  const [sreen, setScreen] = useState({
+    size: 2,
+  });
 
   //local state
 
   const [topvoucher, Settopvoucher] = useState([]);
 
-  // const mobiles1 = useMediaQuery("(max-width:320px)");
+  const mbhorizon = useMediaQuery("(max-width:320px)");
 
-  // const mobiles2 = useMediaQuery("(max-width:600px)");
+  const mbverti = useMediaQuery("(max-width:480px)");
 
-  // const GridXs = {
-  //   opt1: 6,
-  //   opt2: 10,
-  //   opt3: 12,
-  // };
+  const menuimgstyle = {
+    img1: { width: "100px", height: "100px" },
+    img2: { width: "30px", height: "30px" },
+    img3: { width: "15px", height: "15px" },
+  };
+
+  const menufrontstyle = {
+    text1: { fontSize: "12px" },
+    text2: { fontSize: "7px" },
+  };
+
+  const Mainmenustyle = () => {
+    const result = {
+      img: {},
+      text: {},
+    };
+
+    if (mbhorizon == true) {
+      result.img = menuimgstyle.img3;
+      result.text = menufrontstyle.text2;
+    }
+    if (mbverti == true) {
+      result.img = menuimgstyle.img2;
+      result.text = menufrontstyle.text2;
+    }
+
+    if (mbhorizon == false && mbverti == false) {
+      result.img = menuimgstyle.img1;
+      result.text = menufrontstyle.text1;
+    }
+
+    return result;
+  };
 
   //Mount
 
@@ -66,19 +93,25 @@ const Home = () => {
 
   return (
     <div>
-      <section className="Slider">
+      <section
+        style={{ position: "relative", zIndex: "1" }}
+        className="flex jus-center Slider"
+      >
         <Banner></Banner>
       </section>
-      <section className="Main-menu">
+      <section
+        style={{ display: mbverti == true ? "none" : "flex" }}
+        className="Main-menu"
+      >
         <Grid
           style={{ margin: "15px" }}
           display={"flex"}
           container
           justifyContent={"center"}
         >
-          <Grid item={true} md={2}>
+          <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/CV">
+            <Link to="/categorys/combovouchers">
               <Grid
                 className="item"
                 direction="column"
@@ -86,17 +119,14 @@ const Home = () => {
                 display={"flex"}
                 justifyContent="center"
               >
-                <img
-                  style={{ width: "100px", height: "100px" }}
-                  src="./gift-voucher.png"
-                ></img>
-                <small>COMBO VOUCHERS</small>
+                <img style={Mainmenustyle().img} src="./gift-voucher.png"></img>
+                <small style={Mainmenustyle().text}>COMBO VOUCHERS</small>
               </Grid>
             </Link>
           </Grid>
-          <Grid item={true} md={2}>
+          <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/DVND">
+            <Link to="/categorys/dichvunghiduong">
               <Grid
                 className="item"
                 display={"flex"}
@@ -104,17 +134,14 @@ const Home = () => {
                 direction="column"
                 alignItems={"center"}
               >
-                <img
-                  style={{ width: "100px", height: "100px" }}
-                  src="./island.png"
-                ></img>
-                <small>DỊCH VỤ NGHỈ DƯỠNG</small>
+                <img style={Mainmenustyle().img} src="./island.png"></img>
+                <small style={Mainmenustyle().text}>DỊCH VỤ NGHỈ DƯỠNG</small>
               </Grid>
             </Link>
           </Grid>
-          <Grid item={true} md={2}>
+          <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/DVHK">
+            <Link to="/categorys/dichvuhangkhong">
               <Grid
                 className="item"
                 display={"flex"}
@@ -122,17 +149,14 @@ const Home = () => {
                 justifyContent="center"
                 alignItems={"center"}
               >
-                <img
-                  style={{ width: "100px", height: "100px" }}
-                  src="./world.png"
-                ></img>
-                <small>DỊCH VỤ HÀNG KHÔNG</small>
+                <img style={Mainmenustyle().img} src="./world.png"></img>
+                <small style={Mainmenustyle().text}>DỊCH VỤ HÀNG KHÔNG</small>
               </Grid>
             </Link>
           </Grid>
-          <Grid item={true} md={2}>
+          <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/DVLK">
+            <Link to="/categorys/dichvulienket">
               <Grid
                 className="item"
                 display={"flex"}
@@ -140,17 +164,14 @@ const Home = () => {
                 alignItems={"center"}
                 justifyContent="center"
               >
-                <img
-                  style={{ width: "100px", height: "100px" }}
-                  src="./credit.png"
-                ></img>
-                <small>DỊCH VỤ LIÊN KẾT</small>
+                <img style={Mainmenustyle().img} src="./credit.png"></img>
+                <small style={Mainmenustyle().text}>DỊCH VỤ LIÊN KẾT</small>
               </Grid>
             </Link>
           </Grid>
-          <Grid item={true} md={2}>
+          <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/DVG">
+            <Link to="/categorys/dichvugolf">
               <Grid
                 className="item"
                 display={"flex"}
@@ -158,11 +179,8 @@ const Home = () => {
                 alignItems={"center"}
                 justifyContent="center"
               >
-                <img
-                  style={{ width: "100px", height: "100px" }}
-                  src="./golf.png"
-                ></img>
-                <small>DỊCH VỤ GOLF</small>
+                <img style={Mainmenustyle().img} src="./golf.png"></img>
+                <small style={Mainmenustyle().text}>DỊCH VỤ GOLF</small>
               </Grid>
             </Link>
           </Grid>
@@ -177,22 +195,29 @@ const Home = () => {
                   className="productSection d-flex justify-content-center flex-column"
                   key={indx}
                 >
-                  {console.log(main)}
                   <div className="productTitle">{main["title"]}</div>
                   <div className="products">
                     {main["items"].map((item, indx) => {
                       return (
                         <div className="card col-md-5 col-sm-12">
-                          <img
-                            className="card-img-top"
-                            src={item.img_url}
-                            alt="Card image cap"
-                          />
-                          <div className="card-body">
-                            <h5 className="card-title">{item.title}</h5>
-                            <CardItem key={indx} data={item}></CardItem>{" "}
-                            {console.log(item)}
-                          </div>
+                          <Link to={`vouchers/${item.slug}`}>
+                            <img
+                              className="card-img-top"
+                              src={item.img_url}
+                              alt="Card image cap"
+                            />
+                            <div className="card-body">
+                              <Grid display={"flex"} flexDirection="column">
+                                <label style={{ fontSize: "16px" }}>
+                                  {item.title}
+                                </label>
+
+                                <Button type="primary" className="btn-color">
+                                  Xem thông tin...
+                                </Button>
+                              </Grid>
+                            </div>
+                          </Link>
                         </div>
                       );
                     })}

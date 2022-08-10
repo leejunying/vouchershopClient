@@ -11,13 +11,10 @@ import { useEffect } from "react";
 import axios from "axios";
 import { Request_Admin, Request_User } from "../../../API/api";
 import { Select } from "antd";
-import { Alert, Spin } from "antd";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Tooltip } from "antd";
-
-import Addproduct from "./Addnew";
-import Stack from "@mui/material/Stack";
+import Detailpost from "./Detail";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -25,9 +22,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import successAnimation from "./effectbtn/deletesuccess.json";
+import successAnimation from "../Products/effectbtn/deletesuccess.json";
 import Lottie from "react-lottie";
-import VoucherDetail from "./Vouchersdetail";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -41,7 +37,7 @@ const defaultOptions = {
 };
 const { Option } = Select;
 
-const ListVouchers = () => {
+const ListPost = () => {
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
 
   const [isdetail, setDetail] = useState(false);
@@ -57,11 +53,9 @@ const ListVouchers = () => {
   const [data, setData] = useState([]);
 
   const reFreshData = () => {
-    axios.get(`${Request_Admin.getAllvoucher}`).then((res) => {
+    axios.get(`${Request_Admin.getPost}`).then((res) => {
       if (res.status == 200) {
         let newdata = res.data;
-
-        console.log(res.data);
         setData([...newdata]);
       }
     });
@@ -80,44 +74,22 @@ const ListVouchers = () => {
       key: "title",
     },
     {
-      title: "STATUS",
-      dataIndex: "status",
-      key: "status",
-    },
-    {
-      title: "CATEGORY",
-      dataIndex: "key",
-      key: "key",
+      title: "AUTHOR",
+      dataIndex: "author",
+      key: "author",
     },
     {
       title: "TAG",
-      dataIndex: "categorys",
-      key: "tag",
-      render: (_, record) => (
-        <span>
-          {record.categorys.map((tag, index) => {
-            return (
-              <Tag key={`record_${record.id}_key_tag_${index}`}>
-                {tag.title}
-              </Tag>
-            );
-          })}
-        </span>
-      ),
+      dataIndex: "categoryid",
+      key: "categoryid",
+      render: (_, record) => <span>{record.categoryid.title}</span>,
     },
     {
-      title: "IMAGE",
-      key: "image",
-      dataIndex: "img_url",
-      render: (_, record) => (
-        <Space size="middle">
-          <img
-            style={{ width: "80px", height: "80px" }}
-            src={record.img_url}
-          ></img>
-        </Space>
-      ),
+      title: "DATE",
+      dataIndex: "createdAt",
+      key: "createAt",
     },
+
     {
       title: "ACTION",
       key: "action",
@@ -128,16 +100,6 @@ const ListVouchers = () => {
               onClick={() => onClickUpdate(item)}
               style={{ cursor: "pointer" }}
               icon={faPenNib}
-              id="icon"
-              className="d-flex align-items-center"
-            />
-          </Tooltip>
-
-          <Tooltip placement="top" title="Detail">
-            <FontAwesomeIcon
-              onClick={() => handleClickDetail(item)}
-              style={{ cursor: "pointer" }}
-              icon={faPager}
               id="icon"
               className="d-flex align-items-center"
             />
@@ -167,19 +129,13 @@ const ListVouchers = () => {
     setSelectitem(item);
   };
 
-  const handleClickDetail = (item) => {
-    console.log(item);
-    setDetail(true);
-    setSelectitem(item);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
   const handleDelete = () => {
     const id = selectitem._id;
     axios
-      .delete(Request_Admin.deleteVoucherById, {
+      .delete(Request_Admin.deletePost, {
         headers: { Authorization: `Basic ${info_Admin.accessToken}` },
         data: { id: id },
       })
@@ -189,7 +145,7 @@ const ListVouchers = () => {
           setTimeout(() => {
             setDeletedone((o) => !o);
             setOpen(false);
-            window.location.reload();
+            reFreshData();
           }, [2000]);
         }
       });
@@ -197,18 +153,10 @@ const ListVouchers = () => {
 
   if (!!isupdate) {
     return (
-      <Addproduct backtoList={() => setIsupdate(false)} item={selectitem} />
+      <Detailpost backtoList={() => setIsupdate(false)} postdata={selectitem} />
     );
   }
 
-  if (!!isdetail) {
-    return (
-      <VoucherDetail
-        backtoList={() => setDetail(false)}
-        voucherId={selectitem._id}
-      ></VoucherDetail>
-    );
-  }
   return (
     <Grid>
       <Dialog
@@ -245,4 +193,4 @@ const ListVouchers = () => {
   );
 };
 
-export default ListVouchers;
+export default ListPost;

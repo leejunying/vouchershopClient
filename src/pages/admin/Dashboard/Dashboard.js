@@ -14,6 +14,9 @@ import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import Addproduct from "../Products/Addnew";
 import ListVouchers from "../Products/List";
+import ListPost from "../Articles/List";
+import Detail from "../Articles/Detail";
+import Detailpost from "../Articles/Detail";
 
 const { Header, Content, Sider } = Layout;
 
@@ -93,6 +96,8 @@ const Dashboard = () => {
   const renderSwitch = (key) => {
     if (key == 1) return <ListVouchers></ListVouchers>;
     if (key == 2) return <Addproduct></Addproduct>;
+    if (key == 3) return <ListPost></ListPost>;
+    if (key == 4) return <Detailpost></Detailpost>;
   };
 
   return (

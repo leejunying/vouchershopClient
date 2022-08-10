@@ -5,271 +5,226 @@ import axios from "axios";
 import { message, Image, Input } from "antd";
 import { Select, InputNumber } from "antd";
 import "./Addnew.css";
-import { Commonfc } from "../../../Ultis/Commonfunction";
 import { useSelector } from "react-redux";
 import TextField from "@mui/material/TextField";
-import { Category } from "@mui/icons-material";
-import {LeftOutlined} from "@ant-design/icons"
-import successAnimation from "./successbtn.json"
-import Lottie from 'react-lottie';
-  const defaultOptions = {
-      loop: true,
-      autoplay: true,
-      animationData: successAnimation,
-      rendererSettings: {
-        preserveAspectRatio: "xMidYMid slice"
-      }
-    };
-  
-let Monthy = [];
+import { LeftOutlined } from "@ant-design/icons";
+import successAnimation from "./effectbtn/successbtn.json";
+import Lottie from "react-lottie";
+import { Button } from "antd";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-let Color = [];
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: successAnimation,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 
-let Room = [];
+const StatusOptions = ["NEW", "HOT", "DISCOUNT", "SOLD-OUT"];
 
-const Addproduct = (prop) => {
-
-  const voucher = prop.item
-
-
+const Addproduct = (props) => {
+  const voucher = props.item;
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
-
   const { Option } = Select;
-  const [category, setCategory] = useState();
- 
   ///// common state
+  const [category, setCategory] = useState();
   const [image, setImage] = useState();
-
   const [locations, setLocations] = useState([]); //location choose
-
   const [categorys, setCategorys] = useState([]); //filter tabs
-
   const [title, setTitle] = useState("");
-
-  const [status,setStatus]=useState("")
-  //////
-  //warning state
-
-  const [sttTilte, setSttTile] = useState(0);
-
+  const [status, setStatus] = useState("NEW");
   //solution state
   const [price, setPrice] = useState(0);
-
   const [monthoptions, setMonthoptions] = useState([]);
-
-  const [coloropt, setColoropt] = useState(0);
-
-  const [roomopt, setRoomopt] = useState(0);
-
-
-  const [onOk,setOnok]=useState(false)
-
+  const [coloropt, setColoropt] = useState([]);
+  const [roomopt, setRoomopt] = useState([]);
+  const [onOk, setOnok] = useState(false);
   //if prop not null is will fill to update
   useEffect(() => {
-    if (voucher != undefined){
-      setCategory(voucher.key)
-      setTitle(voucher.title)
-      setStatus(voucher.status)
+    if (!!voucher) {
+      setCategory(voucher.key);
+      setTitle(voucher.title);
+      setStatus(voucher.status);
+      setImage(voucher.img_url);
 
-      let newcategorys = voucher.categorys.map((item,indx)=> {
-        if(indx>0) return item._id
-      })
-      
-      newcategorys.shift()
-
-      setLocations(newcategorys)
-      setImage(voucher.img_url)
- 
-      if(voucher.key=="CV")
-      {
-        setPrice(voucher.price_options.price)
-       }
-      if(voucher.key=="DVHK")
-      {
-        setMonthoptions(voucher.price_options.package.length)
-        Monthy=voucher.price_options.package
-       }
-      if(voucher.key=="DVND")
-      {
-        // Monthy=voucher.price_options.duration 
-        // setMonthoptions(Monthy.length)
-
-        setMonthoptions(voucher.price_options.duration)
-
-        Color=voucher.price_options.color
-        setColoropt(Color.length)
-        Room=voucher.price_options.room
-        setRoomopt(Room.length)
-      
-       }
-       if(voucher.key=="DVLK")
-       {
-         Monthy=voucher.price_options.lineofcredit  
-         setMonthoptions(Monthy.length)
-         
-       }
-       if(voucher.key=="DVG")
-       {
-           Monthy=voucher.price_options.duration  
-         setMonthoptions(Monthy.length)
-       }
-     
-      
-
-    } 
-    else{
-              setCategory("CV")
-
+      //set locations
+      if (voucher.categorys.length > 1) {
+        let newcategorys = voucher.categorys.map((item, indx) => {
+          if (indx > 0) return item._id;
+        });
+        newcategorys.shift();
+        setLocations(newcategorys);
+      }
+      if (voucher.key == "CV") {
+        setPrice(voucher.price_options.price);
+      }
+      if (voucher.key == "DVHK") {
+        setMonthoptions(voucher.price_options.package);
+      }
+      if (voucher.key == "DVND") {
+        setMonthoptions(voucher.price_options.duration);
+        setColoropt(voucher.price_options.color);
+        setRoomopt(voucher.price_options.room);
+      }
+      if (voucher.key == "DVLK") {
+        setMonthoptions(voucher.price_options.duration);
+      }
+      if (voucher.key == "DVG") {
+        setMonthoptions(voucher.price_options.duration);
+      }
+    } else {
+      setCategory("CV");
     }
- 
     axios.get(Request_Admin.getcategory).then((res) => {
       if (res.status == 200) {
         setCategorys(res.data);
-
-        console.log(res.data)
-       }
+        console.log(res.data);
+      }
     });
   }, []);
 
- 
-
-  useEffect(() => {
-    Color = createArrobj(coloropt, Color);
-  }, [coloropt]);
-
-  useEffect(() => {
-    Room = createArrobj(roomopt, Room);
-  }, [roomopt]);
+  useEffect(() => {}, [image]);
 
   //function
   //Common onChange
 
   //auto create array obj by number
 
-
- 
-
   const createArrobj = (statenumber, array) => {
-    if ( statenumber<array.length) {
-       
-        array.splice(0,statenumber)
-  
+    console.log(statenumber, array);
+    if (array == undefined || statenumber == 0) {
+      array = [];
     }
-    if (  statenumber > array.length ) {
-      for(let i=0;i<statenumber-array.length;i++)
-      array.push({title:"1",value:"0"})
+    if (statenumber < array.length) {
+      array.splice(0, statenumber);
+      // console.log("smaller");
+      return array;
+    }
+    if (statenumber > array.length) {
+      for (let i = array.length; i < statenumber; i++)
+        array.push({ title: "1", value: "0" });
+      // console.log("bigger");
+      return array;
     }
 
     if (statenumber == 0) {
-      array=[]
+      array = [];
+      // console.log("zero");
+      return array;
     }
-
-    
-    return array;
   };
 
   //for monthy voucher
   const onChangePackage = (indx, type, e) => {
     if (type == "title") monthoptions[indx].title = e.target.value;
-
     if (type == "value") monthoptions[indx].value = e.target.value;
   };
-
   const onChangeColor = (indx, type, e) => {
-    if (type == "title") Color[indx].title = e.target.value;
-
-    if (type == "value") Color[indx].value = e.target.value;
+    if (type == "title") coloropt[indx].title = e.target.value;
+    if (type == "value") coloropt[indx].value = e.target.value;
   };
-
   const onChangeRoom = (indx, type, e) => {
-    if (type == "title") Room[indx].title = e.target.value;
-
-    if (type == "value") Room[indx].value = e.target.value;
+    if (type == "title") roomopt[indx].title = e.target.value;
+    if (type == "value") roomopt[indx].value = e.target.value;
   };
- 
+  const onUpdate = async () => {
+    let tags = [];
+    if (locations.length > 0) {
+      tags = [findCategoryID(), ...locations];
+    } else tags = [findCategoryID()];
 
+    let file = await fetch(image).then((r) => r.blob());
+    console.log(file);
+    const body = new FormData();
+    body.set("key", "821358b6cb84839ab5031d22a6594bdd");
+    body.append("image", file);
+    body.append("name", "voucherdemo");
+    // body.append('expi ration',`${cleartime}`)
+    const res = await axios({
+      method: "post",
+      url: "https://api.imgbb.com/1/upload",
+      data: body,
+    });
+    const updateobj = {
+      id: voucher._id,
+      title: title,
+      key: category,
+      categorys: tags,
+      img_url: res.data.data.display_url,
+      price_options: createPriceOptions(),
+      status: status,
+    };
+    await axios
+      .put(Request_Admin.putUpdatevoucher, updateobj, {
+        headers: {
+          Authorization: `Basic ${info_Admin.accessToken}`,
+        },
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          setOnok(true);
 
- 
+          setTimeout(() => {
+            setOnok(false);
+            props.backtoList();
+          }, [2000]);
+        }
+      });
+  };
 
- 
- 
-  const onUpdate=()=>{
-
-    let tags=[]
-    if(locations.length>0)
-    {
-      tags=[findCategoryID(),...locations]
-
-    }
-    else  
-     tags=[findCategoryID()]
-
-
-    const updateobj={
-
-      id:voucher._id,
-      title:title,
-      key:category,
-      categorys:tags,
-      img_url:image,
-      price_options:createPriceOptions(),
-      status:status,
-  
-    }
-
-     axios.put(Request_Admin.putUpdatevoucher,updateobj, {headers: {
-             'Authorization': `Basic ${info_Admin.accessToken}`
-            }}).then(res=>{
-
-              if(res.status==200)
-              {
-                prop.updatedata(updateobj)
-                setOnok(true)
-
-                setTimeout(()=>{setOnok(false)},[2000])
-              }
-            })
-
-
-  }
-
-  const findCategoryID=()=>{
-     const categoryid = categorys.filter((item) => {
-       return item.key == category;
+  const findCategoryID = () => {
+    const categoryid = categorys.filter((item) => {
+      return item.key == category;
     })[0]._id;
+    return categoryid;
+  };
 
-    return categoryid
-  }
-
-  const createPriceOptions=()=>{
-
-      let priceoptionssend = {
+  const createPriceOptions = () => {
+    let priceoptionssend = {
       price: 0,
       package: [],
       room: [],
       color: [],
       duration: [],
+    };
+    if (category == "CV") {
+      priceoptionssend.price = price;
+      priceoptionssend.package = [];
+      priceoptionssend.room = [];
+      priceoptionssend.color = [];
+      priceoptionssend.duration = [];
     }
-     if (category == "CV") priceoptionssend.price = price;
+
     if (category == "DVHK") {
-      priceoptionssend.package = Monthy;
+      priceoptionssend.package = monthoptions;
+      priceoptionssend.price = 0;
+      priceoptionssend.room = [];
+      priceoptionssend.color = [];
+      priceoptionssend.duration = [];
     }
     if (category == "DVND") {
-      priceoptionssend.room = Room;
-      priceoptionssend.duration = Monthy;
-      priceoptionssend.color = Color;
+      priceoptionssend.room = roomopt;
+      priceoptionssend.duration = monthoptions;
+      priceoptionssend.color = coloropt;
+      priceoptionssend.price = 0;
+      priceoptionssend.package = [];
     }
     if (category == "DVLK") {
-      priceoptionssend.lineofcredit = Monthy;
-      priceoptionssend.room = Room;
+      priceoptionssend.price = 0;
+      priceoptionssend.package = [];
+      priceoptionssend.room = [];
+      priceoptionssend.color = [];
+      priceoptionssend.duration = monthoptions;
     }
     if (category == "DVG") {
-      priceoptionssend.duration = Monthy;
+      priceoptionssend.duration = monthoptions;
     }
 
-    return priceoptionssend
-
-  }
+    return priceoptionssend;
+  };
 
   const onClickAdd = () => {
     //
@@ -277,20 +232,14 @@ const Addproduct = (prop) => {
     //Excute categorys
 
     const categoryssend = [];
- 
-    
 
-        
- 
-
-     categoryssend.push(findCategoryID);
+    categoryssend.push(findCategoryID);
 
     locations.map((location) => {
       categoryssend.push(location);
     });
 
     //Excute priceoptions
-
 
     // Excute Image
 
@@ -313,14 +262,14 @@ const Addproduct = (prop) => {
           title: title,
           img_url: image_url,
           categorys: categoryssend,
-          price_options:  createPriceOptions(),
+          price_options: createPriceOptions(),
           status: status,
         };
 
         axios
           .post(Request_Admin.postNewvoucher, submititem, {
             headers: {
-              'Authorization': `Basic ${info_Admin.accessToken}` 
+              Authorization: `Basic ${info_Admin.accessToken}`,
             },
           })
           .then((res) => {
@@ -330,60 +279,42 @@ const Addproduct = (prop) => {
           });
       }
     });
-
- 
- 
-
-     
   };
 
   const resetfield = () => {
-    setRoomopt(0);
+    setRoomopt([]);
     setTitle("");
-    setColoropt(0);
+    setColoropt([]);
     setLocations([]);
     setMonthoptions([]);
     setImage(undefined);
-    setPrice(0)
-   
-
- 
+    setPrice(0);
   };
 
   const onChangeTitle = (e) => {
     setTitle(e.target.value);
   };
 
-  const onChangeStatus=(e)=>{
-    setStatus(e.target.value)
-  }
-
   const onChangePrice = (value) => {
     setPrice(value);
   };
 
   const onChangeMonthoptions = (value) => {
-    
-
-     
-
-   const  newarr= createArrobj(value,monthoptions)
-
- 
-
-     setMonthoptions(newarr);
+    let duration = createArrobj(value, monthoptions);
+    setMonthoptions([...duration]);
+    console.log(duration);
   };
 
   const onChangeColoroptions = (value) => {
-     setColoropt(value);
+    let color = createArrobj(value, coloropt);
+    setColoropt([...color]);
   };
   const onChangeRoomoptions = (value) => {
-     setRoomopt(value);
+    let room = createArrobj(value, roomopt);
+    setRoomopt([...room]);
   };
 
   const Displayoptions = () => {
-
- 
     if (category == "CV") {
       return (
         <Grid style={{ width: "100%" }}>
@@ -392,11 +323,13 @@ const Addproduct = (prop) => {
             <InputNumber
               style={{ width: "100%" }}
               onChange={onChangePrice}
-              defaultValue={voucher!=undefined?voucher.price_options.price:0}
+              defaultValue={
+                voucher != undefined ? voucher.price_options.price : 0
+              }
               addonAfter="VND"
             />
           </Grid>
-         </Grid>
+        </Grid>
       );
     }
 
@@ -409,27 +342,17 @@ const Addproduct = (prop) => {
             onChange={onChangeMonthoptions}
             style={{ width: "100%" }}
             placeholder="How many options"
-            value={monthoptions}
+            defaultValue={monthoptions.length}
           >
-
-
-            
             {Array.from(Array(5).keys()).map((num) => {
               return <Option key={num} value={num}></Option>;
             })}
           </Select>
 
           <Grid>
-
-            {
-              voucher!=undefined ?
-
-            
-
-               Array.from(Array(monthoptions).keys()).map((item,indx)=>{
-                console.log(monthoptions)
-                let pricepackage=voucher.price_options.package  
-      return (
+            {voucher != undefined
+              ? Array.from(Array(monthoptions.length)).map((item, indx) => {
+                  return (
                     <Grid
                       key={item}
                       style={{ width: "100%", marginTop: "15px" }}
@@ -446,8 +369,8 @@ const Addproduct = (prop) => {
                           md={5}
                         >
                           <TextField
-                            label="Monthy"
-                            defaultValue={pricepackage[indx]?.title==undefined?1:pricepackage[indx].title}
+                            label="Duration/month"
+                            defaultValue={monthoptions[indx].title}
                             onChange={(e) => onChangePackage(indx, "title", e)}
                           ></TextField>
                         </Grid>
@@ -458,7 +381,7 @@ const Addproduct = (prop) => {
                         >
                           <TextField
                             label="value"
-                            defaultValue={pricepackage[indx]?.value==undefined?1:pricepackage[indx].value}
+                            defaultValue={monthoptions[indx].value}
                             onChange={(e) => onChangePackage(indx, "value", e)}
                             placeholder="Value"
                           ></TextField>
@@ -466,8 +389,8 @@ const Addproduct = (prop) => {
                       </Grid>
                     </Grid>
                   );
-              }):
-              Array.from(Array(monthoptions).keys()).map((num, indx) => {
+                })
+              : Array.from(Array(monthoptions.length)).map((num, indx) => {
                   return (
                     <Grid
                       key={num}
@@ -505,11 +428,7 @@ const Addproduct = (prop) => {
                       </Grid>
                     </Grid>
                   );
-                })
-              
-            }
-
-           
+                })}
           </Grid>
         </Grid>
       );
@@ -519,7 +438,6 @@ const Addproduct = (prop) => {
         <Grid
           container
           display={"flex"}
-        
           rowSpacing={1}
           flexDirection={"column"}
           style={{ width: "100%" }}
@@ -538,64 +456,8 @@ const Addproduct = (prop) => {
             </Select>
 
             <Grid>
-              {
-
-                monthoptions!=undefined ? 
-
-                     
-                
-                Array.from(Array(monthoptions.length).keys()).map((num, indx) => {
-
-                     return (
-                      <Grid
-                        key={num}
-                        style={{ width: "100%", marginTop: "15px" }}
-                        className=" flex sp-bot"
-                      >
-                        <Grid
-                          container
-                          style={{ width: "100%" }}
-                          className="flex"
-                        >
-                          <Grid
-                            className="flex al-center jus-start"
-                            item={true}
-                            md={5}
-                          >
-                            <TextField
-                              label="Monthy"
-                              defaultValue={monthoptions[indx].title }
-                              onChange={(e) =>
-                                onChangePackage(indx, "title", e)
-                              }
-                              placeholder="Duration"
-                            ></TextField>
-                          </Grid>
-                          <Grid className="flex jus-center" item={true} md={6}>
-                            <TextField
-                              label="price VND"
-                              defaultValue={ monthoptions[indx].value}
-                              onChange={(e) =>
-                                onChangePackage(indx, "value", e)
-                              }
-                            ></TextField>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                    );
-                  })
-                
-                
-                
-                
-                
-                : 
-
-                
-                Array.from(Array(monthoptions).keys()).map((num, indx) => {
-
-                  
-
+              {voucher != undefined
+                ? Array.from(Array(monthoptions.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -613,7 +475,45 @@ const Addproduct = (prop) => {
                             md={5}
                           >
                             <TextField
-                              label="Monthy"
+                              label="Duration/month"
+                              defaultValue={monthoptions[indx].title}
+                              onChange={(e) =>
+                                onChangePackage(indx, "title", e)
+                              }
+                            ></TextField>
+                          </Grid>
+                          <Grid className="flex jus-center" item={true} md={6}>
+                            <TextField
+                              label="price VND"
+                              defaultValue={monthoptions[indx].value}
+                              onChange={(e) =>
+                                onChangePackage(indx, "value", e)
+                              }
+                            ></TextField>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    );
+                  })
+                : Array.from(Array(monthoptions.length)).map((num, indx) => {
+                    return (
+                      <Grid
+                        key={num}
+                        style={{ width: "100%", marginTop: "15px" }}
+                        className=" flex sp-bot"
+                      >
+                        <Grid
+                          container
+                          style={{ width: "100%" }}
+                          className="flex"
+                        >
+                          <Grid
+                            className="flex al-center jus-start"
+                            item={true}
+                            md={5}
+                          >
+                            <TextField
+                              label="Duration/monthy"
                               defaultValue={1}
                               onChange={(e) =>
                                 onChangePackage(indx, "title", e)
@@ -633,15 +533,7 @@ const Addproduct = (prop) => {
                         </Grid>
                       </Grid>
                     );
-                  })
-                
-                
-                
-                
-          
-
-              }
-            
+                  })}
             </Grid>
           </Grid>
 
@@ -651,7 +543,7 @@ const Addproduct = (prop) => {
               onChange={onChangeColoroptions}
               style={{ width: "100%" }}
               placeholder="How many options"
-              value={coloropt}
+              defaultValue={coloropt.length}
             >
               {Array.from(Array(5).keys()).map((num) => {
                 return <Option key={num} value={num}></Option>;
@@ -659,12 +551,8 @@ const Addproduct = (prop) => {
             </Select>
 
             <Grid>
-
-              {
-                voucher!=undefined?
-
-                Array.from(Array(coloropt).keys()).map((num, indx) => {
-                  let color = voucher.price_options.color
+              {voucher != undefined
+                ? Array.from(Array(coloropt.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -679,14 +567,14 @@ const Addproduct = (prop) => {
                           <Grid className="flex jus-start" item={true} md={5}>
                             <TextField
                               label="color"
-                              defaultValue={color[indx]?.title==undefined?"White":color[indx].title}
+                              defaultValue={coloropt[indx].title}
                               onChange={(e) => onChangeColor(indx, "title", e)}
                             ></TextField>
                           </Grid>
                           <Grid className="flex jus-center" item={true} md={6}>
                             <TextField
                               label="percent %"
-                              defaultValue={color[indx]?.value==undefined?0:color[indx].value}
+                              defaultValue={coloropt[indx].value}
                               onChange={(e) => onChangeColor(indx, "value", e)}
                               placeholder="Value"
                             ></TextField>
@@ -695,9 +583,7 @@ const Addproduct = (prop) => {
                       </Grid>
                     );
                   })
-                :
-
-                Array.from(Array(coloropt).keys()).map((num, indx) => {
+                : Array.from(Array(coloropt.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -727,10 +613,7 @@ const Addproduct = (prop) => {
                         </Grid>
                       </Grid>
                     );
-                  })
-              }
-
-              
+                  })}
             </Grid>
           </Grid>
           <Grid item={true} className="room">
@@ -739,7 +622,7 @@ const Addproduct = (prop) => {
               onChange={onChangeRoomoptions}
               style={{ width: "100%" }}
               placeholder="How many options"
-              value={roomopt}
+              defaultValue={roomopt.length}
             >
               {Array.from(Array(5).keys()).map((num) => {
                 return <Option key={num} value={num}></Option>;
@@ -747,13 +630,8 @@ const Addproduct = (prop) => {
             </Select>
 
             <Grid>
-              { 
-              
-                voucher!=undefined?
-               
-                Array.from(Array(roomopt).keys()).map((num, indx) => {
-                                       let room = voucher.price_options.room
-
+              {voucher != undefined
+                ? Array.from(Array(roomopt.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -768,7 +646,7 @@ const Addproduct = (prop) => {
                           <Grid className="flex jus-start" item={true} md={5}>
                             <TextField
                               label="Room"
-                              defaultValue={room[indx]?.title==undefined?1:room[indx].title}
+                              defaultValue={roomopt[indx].title}
                               onChange={(e) => onChangeRoom(indx, "title", e)}
                               placeholder="Room"
                             ></TextField>
@@ -776,7 +654,7 @@ const Addproduct = (prop) => {
                           <Grid className="flex jus-center" item={true} md={6}>
                             <TextField
                               label="percent %"
-                              defaultValue={room[indx]?.value==undefined?0:room[indx].value}
+                              defaultValue={roomopt[indx].value}
                               onChange={(e) => onChangeRoom(indx, "value", e)}
                               placeholder="Value"
                             ></TextField>
@@ -785,10 +663,7 @@ const Addproduct = (prop) => {
                       </Grid>
                     );
                   })
-              : 
-              
-              
-                Array.from(Array(roomopt).keys()).map((num, indx) => {
+                : Array.from(Array(roomopt.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -819,11 +694,11 @@ const Addproduct = (prop) => {
                         </Grid>
                       </Grid>
                     );
-                  })
-              }
+                  })}
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>)
+      );
     }
 
     if (category == "DVLK") {
@@ -841,7 +716,7 @@ const Addproduct = (prop) => {
               onChange={onChangeMonthoptions}
               style={{ width: "100%" }}
               placeholder="How many options"
-              value={monthoptions}
+              defaultValue={monthoptions.length}
             >
               {Array.from(Array(5).keys()).map((num) => {
                 return <Option key={num} value={num}></Option>;
@@ -849,10 +724,8 @@ const Addproduct = (prop) => {
             </Select>
 
             <Grid>
-              {
-
-                voucher!=undefined?
-                 voucher.price_options.lineofcredit.map((num, indx) => {
+              {voucher != undefined
+                ? Array.from(Array(monthoptions.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -870,18 +743,17 @@ const Addproduct = (prop) => {
                             md={5}
                           >
                             <TextField
-                              label="Monthy"
-                              defaultValue={num.title}
+                              label="Duration/month"
+                              defaultValue={monthoptions[indx].title}
                               onChange={(e) =>
                                 onChangePackage(indx, "title", e)
                               }
-                              placeholder="Duration"
                             ></TextField>
                           </Grid>
                           <Grid className="flex jus-center" item={true} md={6}>
                             <TextField
                               label="price VND"
-                              defaultValue={num.value}
+                              defaultValue={monthoptions[indx].value}
                               onChange={(e) =>
                                 onChangePackage(indx, "value", e)
                               }
@@ -891,9 +763,7 @@ const Addproduct = (prop) => {
                       </Grid>
                     );
                   })
-
-                :
-                Array.from(Array(monthoptions).keys()).map((num, indx) => {
+                : Array.from(Array(monthoptions.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -911,7 +781,7 @@ const Addproduct = (prop) => {
                             md={5}
                           >
                             <TextField
-                              label="Duration"
+                              label="Duration/monthy"
                               defaultValue={1}
                               onChange={(e) =>
                                 onChangePackage(indx, "title", e)
@@ -931,13 +801,9 @@ const Addproduct = (prop) => {
                         </Grid>
                       </Grid>
                     );
-                  })
-              }
-               
-                
+                  })}
             </Grid>
           </Grid>
-         
         </Grid>
       );
     }
@@ -951,7 +817,7 @@ const Addproduct = (prop) => {
               onChange={onChangeMonthoptions}
               style={{ width: "100%" }}
               placeholder="How many options"
-              value={monthoptions}
+              defaultValue={monthoptions.length}
             >
               {Array.from(Array(5).keys()).map((num) => {
                 return <Option key={num} value={num}></Option>;
@@ -959,9 +825,8 @@ const Addproduct = (prop) => {
             </Select>
 
             <Grid>
-              {
-                voucher!=undefined?
-                voucher.price_options.duration.map((num, indx) => {
+              {voucher != undefined
+                ? Array.from(Array(monthoptions.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num.title}
@@ -999,7 +864,8 @@ const Addproduct = (prop) => {
                         </Grid>
                       </Grid>
                     );
-                  }):Array.from(Array(monthoptions).keys()).map((num, indx) => {
+                  })
+                : Array.from(Array(monthoptions.length)).map((num, indx) => {
                     return (
                       <Grid
                         key={num}
@@ -1037,9 +903,7 @@ const Addproduct = (prop) => {
                         </Grid>
                       </Grid>
                     );
-                  })
-
-              }
+                  })}
             </Grid>
           </Grid>
         </Grid>
@@ -1048,24 +912,22 @@ const Addproduct = (prop) => {
   };
 
   const onChangeCategory = (value) => {
- 
     setCategory(value);
-    console.log(value)
-    
-   
-
+    console.log(value);
   };
 
   const imageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
-      setImage(e.target.files[0]);
+      {
+        setImage(URL.createObjectURL(e.target.files[0]));
+      }
 
       // console.log(e.target.files[0]);
     }
   };
 
   //render
- 
+
   return (
     <Grid className="Box-container">
       {categorys != undefined ? (
@@ -1078,55 +940,35 @@ const Addproduct = (prop) => {
                 columns={{ xs: 4, md: 6, sm: 2 }}
                 rowSpacing={2}
               >
-
-               {
-                voucher!=undefined?
-                <Grid onClick={()=>prop.backtoList()} style={{width:"150px",color:"blue",cursor:"pointer"}} justifyContent="center" display="flex"   alignItems={"center"}>
-                  <LeftOutlined> </LeftOutlined>
-                   BACK TO LIST
-                </Grid> : null
-
-               }
+                {voucher != undefined ? (
+                  <Grid
+                    item={true}
+                    onClick={() => props.backtoList()}
+                    style={{ width: "150px", color: "blue", cursor: "pointer" }}
+                    display="flex"
+                    alignItems={"center"}
+                  >
+                    <LeftOutlined> </LeftOutlined>
+                    BACK TO LIST
+                  </Grid>
+                ) : null}
 
                 <Grid item={true}>
                   <h5>Category</h5>
                   <Grid item={true} xs={5}>
                     <Select
-
-                       value={category}
-                       placeholder="Inserted are removed"
+                      value={category}
                       onChange={onChangeCategory}
                       style={{ width: "100%" }}
-                    > 
-                    {
-
-                      voucher!=undefined ?
-                      
-                    categorys.map((item, indx) => {
-                        if (item.key.includes("Lo") == false && locations.includes(item._id)==true )
-
-                           return (
-                            <Select.Option key={item.key} value={item._id}>
+                    >
+                      {categorys.map((item, indx) => {
+                        if (item.key.includes("Lo") == false)
+                          return (
+                            <Select.Option key={item.key} value={item.key}>
                               {item.title}
                             </Select.Option>
                           );
-                      })
-                      
-                      :  
-                         categorys.map((item, indx) => {
-                        if (item.key.includes("Lo") == false 
-                        
-                        )
-                           return (
-                            <Select.Option key={item.key} value={item._id}>
-                              {item.title}
-                            </Select.Option>
-                          );
-                      })
-                    }
-
-
-                     
+                      })}
                     </Select>
                   </Grid>
                 </Grid>
@@ -1137,11 +979,22 @@ const Addproduct = (prop) => {
                     <Input value={title} onChange={onChangeTitle}></Input>
                   </Grid>
                 </Grid>
-                       <Grid item={true}>
+                <Grid item={true}>
                   <h5>Status</h5>
-                  <Grid item={true} xs={5}>
-                    {" "}
-                    <Input value={status} onChange={onChangeStatus}></Input>
+                  <Grid item={true} xs={5} style={{ width: "100%" }}>
+                    <Select
+                      style={{ width: "100%" }}
+                      value={status}
+                      onChange={setStatus}
+                    >
+                      {StatusOptions.map((value) => {
+                        return (
+                          <Select.Option key={value} value={value}>
+                            {value}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
                   </Grid>
                 </Grid>
                 <Grid item={true}>
@@ -1156,32 +1009,7 @@ const Addproduct = (prop) => {
                       style={{
                         width: "100%",
                       }}
-                    > 
-                      
-                      {
-                        voucher!=undefined?
-                         categorys.map((item, indx) => {
-                        if (locations.includes(item) )
-                          return (
-                            <Select.Option key={item._id} value={item._id}>
-                              {item.title}
-                            </Select.Option>
-                          );
-                      })
-
-                        :
-
-                        categorys.map((item, indx) => {
-                        if (item.key.includes("Lo") == true)
-                          return (
-                            <Select.Option key={item._id} value={item._id}>
-                              {item.title}
-                            </Select.Option>
-                          );
-                      })
-
-                      }
-
+                    >
                       {categorys.map((item, indx) => {
                         if (item.key.includes("Lo") == true)
                           return (
@@ -1196,30 +1024,12 @@ const Addproduct = (prop) => {
                 <Grid item={true}>
                   <h5>Demo image</h5>
                   <Grid item={true} xs={5}>
-                    {
-
-                      voucher!=undefined?
-
-                       <img
-                      src={
-                        voucher.img_url
-                      }
-                      style={{ width: "100%", height: "400px" }}
-                    ></img> : <img
-                      src={
-                        image != undefined
-                          ? URL.createObjectURL(image)
-                          : "error"
-                      }
+                    <img
+                      src={image}
                       style={{ width: "100%", height: "400px" }}
                     ></img>
-
-                    }
-                   
                   </Grid>
-
                   <Grid item={true}>
-                    {" "}
                     <input
                       onChange={(e) => imageChange(e)}
                       type="file"
@@ -1240,35 +1050,32 @@ const Addproduct = (prop) => {
                 justifyContent="center"
               >
                 <Grid className="Price-options" item={true}>
-                  {
-                    category!=undefined? Displayoptions():null
-                  }
-                
+                  {category != undefined ? Displayoptions() : null}
                 </Grid>
 
-                <Grid item={true} display="flex"  >
-                      
- 
-                      <Grid> {
-
-                    voucher!=undefined?  <Grid   >
-                    {onOk==false ?  <button  onClick={onUpdate}  className="update-btn">
-                      UPDATE
-                  </button> :  <Lottie   options={defaultOptions} height={150}     width={150}/>} 
-                      
-                      
-                       </Grid>  :     <button onClick={onClickAdd} className="create-btn">
-                    CREATE VOUCHER
-                  </button>
-
-
-
-                  }</Grid>
-                 
-
-             
-
-
+                <Grid item={true} display="flex">
+                  <Grid>
+                    {" "}
+                    {voucher != undefined ? (
+                      <Grid>
+                        {onOk == false ? (
+                          <button onClick={onUpdate} className="update-btn">
+                            UPDATE
+                          </button>
+                        ) : (
+                          <Lottie
+                            options={defaultOptions}
+                            height={150}
+                            width={150}
+                          />
+                        )}
+                      </Grid>
+                    ) : (
+                      <button onClick={onClickAdd} className="create-btn">
+                        CREATE VOUCHER
+                      </button>
+                    )}
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>

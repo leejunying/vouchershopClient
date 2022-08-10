@@ -1,75 +1,67 @@
-.detail-container{
-    width: 80%;
-    margin: 0 20px 0 0 ;
-    border: 1px solid #ededed;
-    max-height: 800px;
-
-
-     scroll-behavior: smooth;
+.ant-image-img {
+  width: 70%;
+  display: block;
+  margin: 0 auto;
 }
-
-
-.ant-image-img{
-
-    width: 70%;
-    display: block;
-    margin: 0 auto;
+.ant-tabs-ink-bar {
+  position: absolute;
+  background: #000000;
+  pointer-events: none;
 }
-
-
-
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #eb7a11 !important;
+  font-weight: 500;
+}
 .ant-checkbox-input {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1;
-    width: 35px;
-    height: 100%;
-    cursor: pointer;
-    opacity: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 35px;
+  height: 100%;
+  cursor: pointer;
+  opacity: 0;
 }
 
-.prict_class{
-    font-size: 20px;
-    margin: 10px 0;
-    font-family: system-ui;
+.prict_class {
+  font-size: 20px;
+  margin: 10px 0;
+  font-family: system-ui;
 }
 
-.prict_class span{
-    font-size: 18px;
-    color: #727272;
+.prict_class span {
+  font-size: 18px;
+  color: #727272;
 }
 
-.prict_class span p{
-    font-size: 20px;
-    color: #727272;
-    text-decoration: line-through;
+.prict_class span p {
+  font-size: 20px;
+  color: #727272;
+  text-decoration: line-through;
 }
 
-.prict_class span h2{
-    font-size: 24px;
-    font-weight: 800;
-    margin: 0;
+.prict_class span h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
 }
 
-.hang_chinh-gan{
-    font-size: 16px;
-    margin: 0;
+.hang_chinh-gan {
+  font-size: 16px;
+  margin: 0;
 }
 
-.div_color p{
-    font-size: 18px;
-    font-weight: 700;
-    margin: 0;
+.div_color p {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
 }
 
-.div_btn{
-    display: flex;
+.div_btn {
+  display: flex;
 }
 
-.options{
-
-        
+.options {
 }

@@ -9,7 +9,7 @@ const Banner = () => {
     autoplay: true,
   };
   return (
-    <div className="carWrapper">
+    <div style={{ position: "relative", zIndex: "0" }} className="carWrapper">
       <div
         id="carouselExampleIndicators"
         className="carousel slide"

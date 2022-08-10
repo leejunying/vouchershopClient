@@ -9,10 +9,9 @@ import User from "./pages/user";
 import Admin from "./pages/admin";
 import Home from "./pages/user/Home/Home";
 import Contacts from "./pages/user/Contacts";
-import Articles from "./pages/user/Articles/Detail";
+import ArticlesPanel from "./pages/user/Articles/Index";
 import LoginAdmin from "./pages/admin/Login";
-import Blog from "./pages/user/Blog/index";
-import CheckOut from "./pages/user/CheckOut/CheckOut";
+import Article from "./pages/user/Articles/Detail/index";
 import Dashboard from "./pages/admin/Dashboard/Dashboard";
 import SignIn from "./pages/user/Login/index";
 import SignUp from "./pages/user/Signup/Signup";
@@ -41,9 +40,9 @@ function App() {
             <User>
               <Switch>
                 <Route path="/" exact component={Home}></Route>
-                <Route path="/lienhe" component={Contacts}></Route>
-                <Route path="/blog" component={Blog}></Route>
-                <Route path="/baiviet/:postid" component={Articles}></Route>
+                <Route path="/contact" component={Contacts}></Route>
+                <Route path="/post" component={ArticlesPanel}></Route>
+                <Route path="/post/:postid" component={Article}></Route>
                 {/* <Route path="/checkout" component={CheckOut}></Route> */}
                 <Route path="/vouchers/:slug" component={Detail}></Route>
                 <Route path="/login" component={SignIn}></Route>

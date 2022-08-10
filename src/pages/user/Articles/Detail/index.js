@@ -1,7 +1,7 @@
 import React from "react";
 
-const Articles = () => {
+const Article = () => {
   return <div>This is Ariticles Detail</div>;
 };
 
-export default Articles;
+export default Article;

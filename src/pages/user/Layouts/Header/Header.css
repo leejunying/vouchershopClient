@@ -1,54 +1,56 @@
 .header-container {
-    margin: 0 !important;
-    padding: 1em 0 1em 0 !important;
-    background-color: white;
+  margin: 0 !important;
+  padding: 1em 0 1em 0 !important;
+  background-color: white;
+  position: relative;
+  z-index: 0;
 }
 
 .logo {
-    padding: 0 !important;
-    margin: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .Button:focus {
-    outline: none !important;
+  outline: none !important;
 }
 
 .Button {
-    outline: none !important;
-    background-color: white;
-    border: 0;
+  outline: none !important;
+  background-color: white;
+  border: 0;
 }
 
 .Button:hover {
-    /* outline: none;
+  /* outline: none;
     background-color: none; */
 }
 
 .Btton {
-    width: 2.5em;
+  width: 2.5em;
 }
-.navbar-toggler:hover, .navbar-toggler:focus{
-    outline: 0 none;
-    background-color: white;
+.navbar-toggler:hover,
+.navbar-toggler:focus {
+  outline: 0 none;
+  background-color: white;
 }
- .notification {
-   
-     text-decoration: none;
-     padding: 10px 15px;
-     position: relative;
-     display: inline-block;
-     border-radius: 2px;
- }
+.notification {
+  text-decoration: none;
+  padding: 10px 15px;
+  position: relative;
+  display: inline-block;
+  border-radius: 2px;
+}
 
- .notification:hover {
-  }
+.notification:hover {
+}
 
- .notification .badge {
-     position: absolute;
-     top: 4px;
-     right: 5px;
-     padding: 5px 10px;
-     border-radius: 50%;
-     background-color: red;
-     color: white;
- }
+.notification .badge {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  padding: 5px 10px;
+  border-radius: 50%;
+  background-color: red;
+  color: white;
+}

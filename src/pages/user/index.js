@@ -9,10 +9,10 @@ const User = ({ children }) => {
   //render
 
   return (
-    <section className="Userpage">
+    <section style={{ position: "relative" }} className="Userpage">
       <Header></Header>
 
-      <main>{children}</main>
+      <main style={{ position: "relative", zIndex: "0" }}>{children}</main>
 
       <Footer></Footer>
     </section>
