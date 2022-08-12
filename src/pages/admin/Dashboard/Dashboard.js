@@ -17,6 +17,11 @@ import ListVouchers from "../Products/List";
 import ListPost from "../Articles/List";
 import Detail from "../Articles/Detail";
 import Detailpost from "../Articles/Detail";
+import ListPayments from "../Bill/Listpending";
+import Listpending from "../Bill/Listpending";
+import Listsuccess from "../Bill/Listsucess";
+import User from "../User/User";
+import AddUser from "../User/AddUser";
 
 const { Header, Content, Sider } = Layout;
 
@@ -50,8 +55,8 @@ const items2 = [
     icon: DollarOutlined,
     titleName: "Hóa đơn",
     child: [
-      { subKey: "7", sublabel: "Biểu đồ" },
-      { subKey: "8", sublabel: "Danh sách" },
+      { subKey: "7", sublabel: "Đơn đang xử lý" },
+      { subKey: "8", sublabel: "Đã thanh toán" },
     ],
   },
   {
@@ -98,6 +103,10 @@ const Dashboard = () => {
     if (key == 2) return <Addproduct></Addproduct>;
     if (key == 3) return <ListPost></ListPost>;
     if (key == 4) return <Detailpost></Detailpost>;
+    if (key == 5) return <User></User>;
+    if (key == 6) return <AddUser></AddUser>;
+    if (key == 7) return <Listpending></Listpending>;
+    if (key == 8) return <Listsuccess></Listsuccess>;
   };
 
   return (

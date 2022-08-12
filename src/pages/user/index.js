@@ -12,7 +12,16 @@ const User = ({ children }) => {
     <section style={{ position: "relative" }} className="Userpage">
       <Header></Header>
 
-      <main style={{ position: "relative", zIndex: "0" }}>{children}</main>
+      <main
+        style={{
+          position: "relative",
+          zIndex: "0",
+          minHeight: "500px",
+          backgroundColor: "white",
+        }}
+      >
+        {children}
+      </main>
 
       <Footer></Footer>
     </section>

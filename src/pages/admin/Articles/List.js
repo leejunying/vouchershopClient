@@ -136,7 +136,7 @@ const ListPost = () => {
     const id = selectitem._id;
     axios
       .delete(Request_Admin.deletePost, {
-        headers: { Authorization: `Basic ${info_Admin.accessToken}` },
+        headers: { authorization: `Basic ${info_Admin.accessToken}` },
         data: { id: id },
       })
       .then((res) => {

@@ -16,17 +16,24 @@ import { Grid, TextField } from "@mui/material";
 import { Select, InputNumber } from "antd";
 import PaypalButton from "./Paypal";
 import location from "./../../../Ultis/local.json";
+import axios from "axios";
+import { Request_User } from "../../../API/api";
+import { Modal } from "antd";
 
 const Cart = () => {
   const { Option } = Select;
 
   const ArrLocation = [...location];
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   //information State
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
+  const [phone, setPhone] = useState("");
+  const [errPhone, setErrphone] = useState(false);
+  const [errAddress, setErraddress] = useState(false);
   const [address, setAddress] = useState("");
-
+  const [alertcontent, setAlertcontent] = useState("");
   //////////////
   const [isCheckOut, setIsCheckOut] = useState(false);
 
@@ -38,6 +45,7 @@ const Cart = () => {
   const data = useSelector((state) => (state = state.cart.items));
   const total = data
     .map((data) => {
+      console.log(data);
       data = data.price;
 
       return Number(data);
@@ -48,7 +56,6 @@ const Cart = () => {
   });
   const [picked, setPicked] = useState([]);
   const dispatch = useDispatch();
-  const [checked, setChecked] = useState([]);
 
   const handleChange = (e) => {
     let takeList = [];
@@ -66,11 +73,41 @@ const Cart = () => {
     }
   };
 
+  const validate = () => {
+    if (phone.length != 10) {
+      setErrphone(true);
+    }
+    if (address.length == 0) {
+      setErraddress(true);
+    }
+
+    if (phone.length == 10 && address.length > 0) {
+      setErrphone(false);
+
+      setErraddress(false);
+      savetoPayment();
+    }
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
   //Catch Location
   useEffect(() => {
     setLocation2(LoadL2()[0].name);
-    setLocation3(LoadL2()[0].wards[0].name);
+
+    let Load3 = LoadL3();
+    if (Load3.length > 0) setLocation3(Load3[0].name);
   }, [location1]);
+
+  useEffect(() => {
+    let Load3 = LoadL3();
+    if (Load3.length > 0) setLocation3(Load3[0].name);
+  }, [location2]);
 
   const onChangeFname = (e) => {
     setFname(e.target.value);
@@ -79,6 +116,9 @@ const Cart = () => {
     setLname(e.target.value);
   };
 
+  const onChangePhone = (e) => {
+    setPhone(e.target.value);
+  };
   const onChangeAddress = (e) => {
     setAddress(e.target.value);
   };
@@ -92,7 +132,20 @@ const Cart = () => {
       return item.name == location1;
     })[0].districts;
     // console.log("L2", resultL2);
+
+    console.log(resultL2);
     return resultL2;
+  };
+
+  const LoadL3 = () => {
+    let resultL3 = LoadL2().filter((item) => {
+      return item.name == location2;
+    })[0];
+    let final = resultL3?.wards;
+    if (final) {
+      return final;
+    } else;
+    return [];
   };
 
   const onChangeL2 = (value) => {
@@ -109,10 +162,10 @@ const Cart = () => {
 
   const CheckOut = () => {
     setIsCheckOut(true);
-
     setFname(user.firstname);
     setLname(user.lastname);
     setAddress(user.address);
+    setPhone(user.phone);
   };
 
   const handleCheckAll = (e) => {
@@ -123,8 +176,33 @@ const Cart = () => {
     }
   };
 
-  const activeCheckoutbtn = () => {
-    return user != undefined ? false : true;
+  const savetoPayment = () => {
+    const payment = {
+      userid: user._id,
+      purchase_items: data,
+      total: total,
+      status: "pending",
+      shipaddress: `Tỉnh/thành phố:${location1}, Quận/huyện:${location2}, Phường/xã:${location3} Địa chỉ: ${address}`,
+      contactphone: phone,
+    };
+
+    if (errAddress == false || errPhone == false) {
+      console.log(payment);
+      axios
+        .post(Request_User.submitpayment, payment, {
+          headers: {
+            Authorization: `Basic ${user.accessToken}`,
+          },
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            dispatch(clearItems([]));
+            setIsCheckOut(false);
+            showModal(true);
+            setAlertcontent("Bạn đã đặt thành công xin hãy chờ liên hệ");
+          }
+        });
+    }
   };
 
   return (
@@ -212,7 +290,7 @@ const Cart = () => {
             <div className=" card p-2">
               <div className="input-group d-flex flex-column">
                 <div>
-                  <div className="checkout">
+                  <div>
                     <h5>Thông tin đơn hàng</h5>
                     <div className=" d-flex flex-row col-12 ">
                       <span>
@@ -235,16 +313,21 @@ const Cart = () => {
                     {data.length > 0 ? (
                       <Grid item={true}>
                         {" "}
-                        <Button
-                          onClick={CheckOut}
-                          disabled={activeCheckoutbtn()}
-                          className="btn btn-secondary  col-12"
-                        >
-                          Xác nhận giỏ hàng
-                        </Button>
-                        {activeCheckoutbtn() == true ? (
-                          <p>Bạn cần đặng nhập để thanh toán</p>
-                        ) : null}{" "}
+                        {!!user?.username ? (
+                          <Button
+                            onClick={CheckOut}
+                            className="btn btn-secondary  col-12"
+                          >
+                            Xác nhận giỏ hàng
+                          </Button>
+                        ) : (
+                          <Grid
+                            className="flex jus-center"
+                            style={{ width: "100%" }}
+                          >
+                            Bạn cần đặng nhập để thanh toán
+                          </Grid>
+                        )}
                       </Grid>
                     ) : (
                       <p>Chưa chọn sản phẩm nào</p>
@@ -258,23 +341,38 @@ const Cart = () => {
 
         {isCheckOut == true ? (
           <Grid
-            spacing={4}
+            spacing={2}
             container
             style={{ flexDirection: "column" }}
             className="flex fcol checkout"
           >
-            <h3>Thông tin thanh toán</h3>
+            <h4 style={{ marginLeft: "10px" }}>Thông tin thanh toán</h4>
             <Grid md={12} display="flex" item={true}>
               <TextField
+                disabled
                 style={{ marginRight: "10px" }}
                 label="Họ"
                 onChange={onChangeFname}
                 value={fname}
               ></TextField>
               <TextField
+                disabled
                 label="Tên"
                 onChange={onChangeLname}
                 value={lname}
+              ></TextField>
+            </Grid>
+            <Grid md={12} item={true}>
+              <TextField
+                required
+                helperText={
+                  errPhone == true ? "Số điện thoại không hợp lệ" : ""
+                }
+                error={errPhone}
+                style={{ marginRight: "10px" }}
+                label="SĐT"
+                onChange={onChangePhone}
+                value={phone}
               ></TextField>
             </Grid>
             <Grid md={12} display="flex" item={true}>
@@ -285,6 +383,9 @@ const Cart = () => {
                   defaultValue="Hồ Chí Minh"
                   placeholder="Tỉnh / thành phố"
                   style={{ width: "100%" }}
+                  filterSort={(optionA, optionB) =>
+                    optionA > optionB ? -1 : 1
+                  }
                 >
                   {ArrLocation.map((province) => {
                     return (
@@ -323,20 +424,27 @@ const Cart = () => {
                   placeholder="Phường/xã"
                   style={{ width: "100%" }}
                 >
-                  {LoadL2() != undefined
-                    ? LoadL2()[0].wards.map((item) => {
-                        return (
-                          <Option key={item} value={item.name}>
-                            {item.name}
-                          </Option>
-                        );
-                      })
+                  {!!LoadL3()
+                    ? LoadL3()
+                        .map((item) => {
+                          return (
+                            <Option key={item} value={item.name}>
+                              {item.name}
+                            </Option>
+                          );
+                        })
+                        .sort()
                     : null}
                 </Select>
               </Grid>
             </Grid>
             <Grid md={8} item={true}>
               <TextField
+                required
+                error={errAddress}
+                helperText={
+                  errAddress == true ? "Địa chỉ không được để trống" : ""
+                }
                 value={address}
                 onChange={onChangeAddress}
                 style={{ width: "100%" }}
@@ -359,16 +467,31 @@ const Cart = () => {
             <Grid md={6} item={true}>
               {selectopt == "PAYPAL" ? (
                 <PaypalButton
+                  showModal={showModal}
+                  alertcontent={(value) => setAlertcontent(value)}
+                  ischeckout={() => setIsCheckOut(false)}
                   total={total}
                   cart={data}
                   user={user}
+                  phone={phone}
+                  address={`Tỉnh thành/phố: ${location1},Quận/huyện:${location2}, Phường/xã:${location3} Địa chỉ: ${address}`}
                 ></PaypalButton>
               ) : (
-                <button>CHECKOUT</button>
+                <button className="checkout-btn" onClick={() => validate()}>
+                  CHECKOUT
+                </button>
               )}
             </Grid>
           </Grid>
         ) : null}
+        <Modal
+          cancelButtonProps={{ style: { display: "none" } }}
+          title="Transaction status"
+          visible={isModalVisible}
+          onOk={handleOk}
+        >
+          {alertcontent}
+        </Modal>
       </div>
     </div>
   );

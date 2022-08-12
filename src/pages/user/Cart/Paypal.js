@@ -13,38 +13,35 @@ const PaypalButton = (props) => {
   };
 
   const dispatch = useDispatch();
-  const { total, cart, user } = props;
+  const { total, cart, user, address, phone } = props;
 
   var sendtotal = Math.floor(total / 23460);
-
-  const [paidFor, setPaidFor] = useState(false);
-  const [error, setError] = useState(null);
-  const handleApprove = (orderID) => {
-    setPaidFor(true);
-  };
-  if (paidFor) {
-    alert("Cảm ơn bạn đã mua hàng!");
-  }
-  if (error === true) {
-    alert("Thanh toán thật bại!");
-  }
 
   const saveData = () => {
     const payment = {
       userid: user._id,
       purchase_items: cart,
       total: total,
+      status: "success",
+      shipaddress: address,
+      contactphone: phone,
     };
 
     axios
-      .post(Request_User.submitpaypal, payment, {
+      .post(Request_User.submitpayment, payment, {
         headers: {
-          token: `Basic ${user.accessToken}`,
+          Authorization: `Basic ${user.accessToken}`,
         },
       })
       .then((res) => {
         if (res.status == 200) {
           dispatch(clearItems([]));
+          props.showModal();
+          props.alertcontent("Transaction successful!");
+          props.ischeckout();
+        } else {
+          props.showModal();
+          props.alertcontent("Transaction failed!");
         }
       });
   };
@@ -65,6 +62,7 @@ const PaypalButton = (props) => {
           });
         }}
         onApprove={(data, actions) => {
+          console.log(data);
           saveData();
         }}
       />

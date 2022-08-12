@@ -1,0 +1,14 @@
+.ant-table-cell{
+    font-size: 1.1em;
+}
+.action:focus{
+    outline: none;
+    display: none;
+}
+.action:hover{
+    outline: none;
+}
+.action{
+    border:0;
+    background-color: transparent;
+}

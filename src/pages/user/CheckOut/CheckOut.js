@@ -18,8 +18,6 @@ const CheckOut = () => {
     })
     .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
 
-  console.log(total);
-
   return (
     <div className="maincontainer">
       <div className="container">
@@ -59,13 +57,13 @@ const CheckOut = () => {
             </ul>
 
             <form className="card p-2">
-              <div className="input-group">
+              <DriveEta className="input-group">
                 <input
                   type="text"
                   className="form-control"
                   placeholder="Promo code"
                 />
-                <div className="input-group-append">
+                <div  style={{ border: "none" }} className="input-group-append">
                   <button type="button" className="btn btn-secondary">
                     Thanh toán
                   </button>

@@ -138,15 +138,25 @@ const Detail = () => {
   };
 
   const addTocart = () => {
+    let priceresult = 0;
+
+    // if(data.key=="CV")
+    //   priceresult=price
+    // if(data.key=="DVHK")
+    //   priceresult=
+    // if(data.key=="DVLK")
+
+    // if(data.key=="DVG")
+
+    // if(data.key=="DVND")
+
     const itemobj = {
       title: data.title,
       img_url: data.img_url,
-      price: price,
+      price: parseInt(price),
     };
 
     // console.log(itemobj)
-
-    console.log(data);
 
     dispatch(addItem(itemobj));
   };
@@ -380,7 +390,7 @@ const Detail = () => {
                 Tổng :{" "}
                 {price != undefined
                   ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-                    "VND"
+                    " VND"
                   : 0}
               </Grid>
             </Grid>

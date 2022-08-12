@@ -10,9 +10,10 @@ export const Request_User = {
   filtervoucher: (key, page) => {
     return `${host}/voucher/filter?key=${key}&&page=${page}`;
   }, //get + query
-  submitpaypal: `${host}/payment`, //post
+  submitpayment: `${host}/payment`, //post
 };
 export const Request_Admin = {
+  ///////voucher
   getAllvoucher: `${host}/voucher?`,
   postNewvoucher: `${host}/voucher`,
   putUpdatevoucher: `${host}/voucher`,
@@ -22,12 +23,23 @@ export const Request_Admin = {
   getDetailpostByVoucherid: (voucherid) => {
     return `${host}/detailpost?voucherid=${voucherid}`;
   }, //querybyID voucherid=
+  /////////detailpost
   postDetailpost: `${host}/detailpost`, //verify admin,body= {voucherid,type,content}
   putDetailpost: `${host}/detailpost`, //verify admin,detailpostid=_id, updatebody={voucherid,type,content}
   deleteDetailpost: `${host}/detailpost`, //verify admin,body _id
+  /////////category
   getcategory: `${host}/category`,
+  ///////Post
   getPost: `${host}/post`,
   postPost: `${host}/post`, //verify admin ,body ={categoryid,title,content,author}
   putPost: `${host}/post`, //verify admin , body = {categoryid,title,author}
   deletePost: `${host}/post`, //verify admin , body _id
+  ///////Payment
+  getPayment: `${host}/payment`,
+  putPayment: `${host}/payment`,
+  deletePayment: `${host}/payment`,
+  ////User
+  getAllUser: `${host}/user`, // need verify token
+  deleteUser: `${host}/user`, // need verify token and user id
+  putUpdateUser: `${host}/user`,
 };

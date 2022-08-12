@@ -189,7 +189,7 @@ const ListVouchers = () => {
           setTimeout(() => {
             setDeletedone((o) => !o);
             setOpen(false);
-            window.location.reload();
+            reFreshData();
           }, [2000]);
         }
       });

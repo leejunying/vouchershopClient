@@ -1,39 +1,70 @@
 html {
-    font-size: 14px !important;
+  font-size: 14px !important;
 }
 
 .image {
-    height: 40px;
-    width: 40px;
+  height: 40px;
+  width: 40px;
 }
 
 .checkout {
-    padding: 1em 0 1em 0;
+  padding: 1em 0 1em 0;
 }
 
- 
 #icon {
-    width: 1.5em;
-    height: 1.5em;
+  width: 1.5em;
+  height: 1.5em;
 }
 
 .price {
-    margin-right: 1em;
+  margin-right: 1em;
 }
 
 .delete,
 .delete:focus,
 .delete:active {
-    border: 0;
-    background: none;
-    outline: none;
-    padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+  padding: 0;
 }
 
 .borderr {
-    border: 0 0 1px 0 solid black !important;
+  border: 0 0 1px 0 solid black !important;
 }
 
 .label {
-    margin-left: 2em;
+  margin-left: 2em;
+}
+.checkout-btn {
+  width: 220px;
+  height: 34px;
+  padding: 0;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.2);
+  border: 1px solid;
+  border-color: #1486f9 #0f7de9 #0d6acf;
+  background: #1993fb;
+  border-radius: 4px;
+  background-image: -webkit-linear-gradient(top, #4cb1fe, #229afc 40%, #138df6);
+  background-image: -moz-linear-gradient(top, #4cb1fe, #229afc 40%, #138df6);
+  background-image: -o-linear-gradient(top, #4cb1fe, #229afc 40%, #138df6);
+  background-image: linear-gradient(to bottom, #4cb1fe, #229afc 40%, #138df6);
+  -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.checkout-btn:active {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  border-color: #075bba #0c69d2 #0f7de9;
+  background-image: -webkit-linear-gradient(top, #1281dc, #1593fc);
+  background-image: -moz-linear-gradient(top, #1281dc, #1593fc);
+  background-image: -o-linear-gradient(top, #1281dc, #1593fc);
+  background-image: linear-gradient(to bottom, #1281dc, #1593fc);
+  -webkit-box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1),
+    0 1px rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1), 0 1px rgba(255, 255, 255, 0.5);
 }

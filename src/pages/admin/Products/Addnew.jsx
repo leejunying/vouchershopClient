@@ -31,7 +31,8 @@ const Addproduct = (props) => {
   const { Option } = Select;
   ///// common state
   const [category, setCategory] = useState();
-  const [image, setImage] = useState();
+  const [image, setImage] = useState("");
+  const [isChangeimg, setIsChangeimg] = useState(false);
   const [locations, setLocations] = useState([]); //location choose
   const [categorys, setCategorys] = useState([]); //filter tabs
   const [title, setTitle] = useState("");
@@ -132,31 +133,36 @@ const Addproduct = (props) => {
   };
   const onUpdate = async () => {
     let tags = [];
-    if (locations.length > 0) {
-      tags = [findCategoryID(), ...locations];
-    } else tags = [findCategoryID()];
 
-    let file = await fetch(image).then((r) => r.blob());
-    console.log(file);
-    const body = new FormData();
-    body.set("key", "821358b6cb84839ab5031d22a6594bdd");
-    body.append("image", file);
-    body.append("name", "voucherdemo");
-    // body.append('expi ration',`${cleartime}`)
-    const res = await axios({
-      method: "post",
-      url: "https://api.imgbb.com/1/upload",
-      data: body,
-    });
     const updateobj = {
       id: voucher._id,
       title: title,
       key: category,
       categorys: tags,
-      img_url: res.data.data.display_url,
+      img_url: "",
       price_options: createPriceOptions(),
       status: status,
     };
+    if (locations.length > 0) {
+      tags = [findCategoryID(), ...locations];
+    } else tags = [findCategoryID()];
+
+    if (!!isChangeimg) {
+      let file = (await fetch(image).then((r) => r.blob())) || undefined;
+      const body = new FormData();
+      body.set("key", "821358b6cb84839ab5031d22a6594bdd");
+      body.append("image", file);
+      body.append("name", "voucherdemo");
+      // body.append('expi ration',`${cleartime}`)
+      const res = await axios({
+        method: "post",
+        url: "https://api.imgbb.com/1/upload",
+        data: body,
+      });
+
+      updateobj.img_url = res.data.data.display_url;
+    } else updateobj.img_url = image;
+
     await axios
       .put(Request_Admin.putUpdatevoucher, updateobj, {
         headers: {
@@ -287,7 +293,7 @@ const Addproduct = (props) => {
     setColoropt([]);
     setLocations([]);
     setMonthoptions([]);
-    setImage(undefined);
+    setImage("");
     setPrice(0);
   };
 
@@ -919,6 +925,7 @@ const Addproduct = (props) => {
   const imageChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       {
+        setIsChangeimg(true);
         setImage(URL.createObjectURL(e.target.files[0]));
       }
 

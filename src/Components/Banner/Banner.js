@@ -9,7 +9,13 @@ const Banner = () => {
     autoplay: true,
   };
   return (
-    <div style={{ position: "relative", zIndex: "0" }} className="carWrapper">
+    <div
+      style={{
+        position: "relative",
+        zIndex: "0",
+      }}
+      className="carWrapper"
+    >
       <div
         id="carouselExampleIndicators"
         className="carousel slide"
@@ -27,6 +33,7 @@ const Banner = () => {
         <div className="carousel-inner">
           <div className="carousel-item active">
             <img
+              style={{ height: "500px" }}
               className="d-block w-100"
               src="https://promacprinting.com/wp-content/uploads/2021/03/voucher-du-lich.jpg"
               alt="First slide"
@@ -34,6 +41,7 @@ const Banner = () => {
           </div>
           <div className="carousel-item">
             <img
+              style={{ height: "500px" }}
               className="d-block w-100"
               src="https://www.dulichthuyphico.com/uploads/plugin/products/827/1617848264-1428899477-3n2-phong-villa-vinpearl-luxury-a-n-ng-vinpearl-resort-amp-spa-a-n-ng-n-sang-t-ng-a-on-san-bay-cho-02-ng-i-va-2-tr-em-d-i-4-tu-i.jpg"
               alt="Second slide"
@@ -41,6 +49,7 @@ const Banner = () => {
           </div>
           <div className="carousel-item">
             <img
+              style={{ height: "500px" }}
               className="d-block w-100"
               src="https://songhantourist.com/upload/articles-images/images/san-combo-gia-re-kich-cau-du-lich.png"
               alt="Third slide"

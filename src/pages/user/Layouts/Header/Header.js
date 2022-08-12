@@ -16,6 +16,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useCallback } from "react";
 import { debounce } from "lodash";
+import { Grid } from "@mui/material";
 const { Search } = Input;
 const Header = () => {
   const [searchitem, setSearchitem] = useState([]);
@@ -44,6 +45,11 @@ const Header = () => {
   );
 
   const cart = useSelector((state) => (state = state.cart.items));
+
+  const user =
+    useSelector((state) => {
+      return state.account.Client;
+    }) || undefined;
 
   return (
     <nav
@@ -122,9 +128,23 @@ const Header = () => {
             <Link
               className="notification"
               style={{ fontSize: "18px" }}
-              to="/login"
+              to={user?.username ? "/profile" : "/login"}
             >
-              <UserOutlined style={{ fontSize: "32px" }} />
+              {user?.username ? (
+                <Grid display="flex" flexDirection="column">
+                  <label
+                    style={{
+                      fontSize: "14px",
+                      textTransform: "uppercase",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {user.username}
+                  </label>
+                </Grid>
+              ) : (
+                <UserOutlined style={{ fontSize: "32px", cursor: "pointer" }} />
+              )}
             </Link>
           </li>
         </ul>
