@@ -8,7 +8,7 @@ import Icon, { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { Select } from "antd";
 import { Input, Space } from "antd";
-import { Request_User } from "../../../../API/api";
+import { Request_User } from "../../../API/api";
 import axios from "axios";
 import { useState } from "react";
 import { useCallback } from "react";
@@ -28,7 +28,7 @@ const Header = () => {
   const [fix, setFix] = useState(false);
 
   const setFixed = () => {
-    if (window.scrollY >= 150) setFix(true);
+    if (window.scrollY >= 300) setFix(true);
     else setFix(false);
   };
 
@@ -68,37 +68,25 @@ const Header = () => {
   if (mbhorizon == true || mbverti == true) {
     return (
       <Grid
-        xs={fix ? 12 : 12}
         container
         display="flex"
         alignItems="center"
-        style={{
-          width: "100%",
-          backgroundColor: "white",
-          position: fix ? "fixed" : "relative",
-          top: 0,
-          zIndex: 100,
-        }}
+        style={{ width: "100%", backgroundColor: "white" }}
       >
-        <Grid item={true} xs={fix ? 2 : 3}>
+        <Grid item={true} xs={2}>
           <FontAwesomeIcon
             onClick={() => setmbMenu(true)}
-            style={{ cursor: "pointer", fontSize: "22px" }}
+            style={{ cursor: "pointer", fontSize: "18px" }}
             icon={faBars}
             id="icon"
             className="d-flex align-items-center"
           />
         </Grid>
-        {}
-        <Grid item={true} xs={fix ? 6 : 9} className="flex">
+
+        <Grid item={true} xs={9} className="flex">
           <Link to="/">
             {" "}
-            <img
-              style={{
-                width: "100%",
-              }}
-              src="./logo.png"
-            ></img>
+            <img style={{ width: "100%" }} src="./logo.png"></img>
           </Link>
         </Grid>
       </Grid>
@@ -108,9 +96,10 @@ const Header = () => {
   //normal screen
   return (
     <Grid
-      md={fix ? 10 : 12}
+      xs={0}
+      md={12}
       container
-      style={{ zIndex: "1", position: fix ? "fixed" : "relative", top: 0 }}
+      style={{ postion: "relative", zIndex: "1" }}
       className="navbar navbar-expand-lg navbar-light header-container d-flex  align-items-center flex-row"
     >
       <Grid display={"flex"} justifyContent="center" item={true} md={2}>
@@ -210,7 +199,7 @@ const Header = () => {
             <Link
               className="notification"
               style={{ fontSize: "18px" }}
-              to={user?.username ? `/profile/:${user.username}` : `/login`}
+              to={user?.username ? "/profile" : "/login"}
             >
               {user?.username ? (
                 <Grid display="flex" flexDirection="column">

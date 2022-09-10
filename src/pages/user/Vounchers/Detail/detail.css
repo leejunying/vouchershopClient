@@ -1,17 +1,3 @@
-.ant-image-img {
-  width: 70%;
-  display: block;
-  margin: 0 auto;
-}
-.ant-tabs-ink-bar {
-  position: absolute;
-  background: #000000;
-  pointer-events: none;
-}
-.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: #eb7a11 !important;
-  font-weight: 500;
-}
 .ant-checkbox-input {
   position: absolute;
   top: 0;

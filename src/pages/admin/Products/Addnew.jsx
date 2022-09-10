@@ -2,17 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import { Request_Admin } from "../../../API/api";
 import axios from "axios";
-import { message, Image, Input } from "antd";
+import { message, Image, Input, Spin } from "antd";
 import { Select, InputNumber } from "antd";
 import "./Addnew.css";
 import { useSelector } from "react-redux";
 import TextField from "@mui/material/TextField";
 import { LeftOutlined } from "@ant-design/icons";
 import successAnimation from "./effectbtn/successbtn.json";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useQuill } from "react-quilljs";
+import BlotFormatter from "quill-blot-formatter";
 import Lottie from "react-lottie";
-import { Button } from "antd";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const defaultOptions = {
   loop: true,
@@ -23,7 +24,7 @@ const defaultOptions = {
   },
 };
 
-const StatusOptions = ["NEW", "HOT", "DISCOUNT", "SOLD-OUT"];
+const StatusOptions = ["NEW", "HOT", "SALE", "SOLD-OUT"];
 
 const Addproduct = (props) => {
   const voucher = props.item;
@@ -37,12 +38,19 @@ const Addproduct = (props) => {
   const [categorys, setCategorys] = useState([]); //filter tabs
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState("NEW");
+  const [typeselect, setTypeselect] = useState("detail");
+  const [content, setContent] = useState("");
+  const [detail, setDetail] = useState("");
+  const [policy, setPolicy] = useState("");
+  const [limitedtime, setLimitedtime] = useState(new Date());
   //solution state
   const [price, setPrice] = useState(0);
   const [monthoptions, setMonthoptions] = useState([]);
   const [coloropt, setColoropt] = useState([]);
   const [roomopt, setRoomopt] = useState([]);
   const [onOk, setOnok] = useState(false);
+
+  console.log("content", content);
   //if prop not null is will fill to update
   useEffect(() => {
     if (!!voucher) {
@@ -50,6 +58,10 @@ const Addproduct = (props) => {
       setTitle(voucher.title);
       setStatus(voucher.status);
       setImage(voucher.img_url);
+      setContent(voucher.detailcontent);
+      setLimitedtime(new Date(voucher.limitedtime));
+      setPolicy(voucher.policycontent);
+      setDetail(voucher.detailcontent);
 
       //set locations
       if (voucher.categorys.length > 1) {
@@ -82,13 +94,31 @@ const Addproduct = (props) => {
     axios.get(Request_Admin.getcategory).then((res) => {
       if (res.status == 200) {
         setCategorys(res.data);
-        console.log(res.data);
+        // console.log(res.data);
       }
     });
   }, []);
 
-  useEffect(() => {}, [image]);
+  useEffect(() => {
+    displayPost();
+  }, [content]);
 
+  useEffect(() => {
+    if (!!voucher) {
+      if (typeselect == "detail") {
+        if (!!detail) setContent(detail);
+        else setContent(voucher.detailcontent);
+      }
+
+      if (typeselect == "policy") {
+        if (!!policy) setContent(policy);
+        else setContent(voucher.policycontent);
+      }
+    } else {
+      if (typeselect == "detail") setContent(detail);
+      if (typeselect == "policy") setContent(policy);
+    }
+  }, [typeselect]);
   //function
   //Common onChange
 
@@ -132,20 +162,26 @@ const Addproduct = (props) => {
     if (type == "value") roomopt[indx].value = e.target.value;
   };
   const onUpdate = async () => {
-    let tags = [];
+    const categoryssend = [];
+
+    categoryssend.push(findCategoryID());
+
+    locations.map((location) => {
+      categoryssend.push(location);
+    });
 
     const updateobj = {
       id: voucher._id,
       title: title,
       key: category,
-      categorys: tags,
+      categorys: categoryssend,
       img_url: "",
       price_options: createPriceOptions(),
       status: status,
+      limitedtime: limitedtime,
+      policycontent: policy,
+      detailcontent: detail,
     };
-    if (locations.length > 0) {
-      tags = [findCategoryID(), ...locations];
-    } else tags = [findCategoryID()];
 
     if (!!isChangeimg) {
       let file = (await fetch(image).then((r) => r.blob())) || undefined;
@@ -163,6 +199,8 @@ const Addproduct = (props) => {
       updateobj.img_url = res.data.data.display_url;
     } else updateobj.img_url = image;
 
+    console.log(updateobj);
+
     await axios
       .put(Request_Admin.putUpdatevoucher, updateobj, {
         headers: {
@@ -175,7 +213,6 @@ const Addproduct = (props) => {
 
           setTimeout(() => {
             setOnok(false);
-            props.backtoList();
           }, [2000]);
         }
       });
@@ -232,59 +269,70 @@ const Addproduct = (props) => {
     return priceoptionssend;
   };
 
-  const onClickAdd = () => {
+  const onClickAdd = async () => {
     //
+    const submititem = {
+      key: `${category}`,
+      title: title,
+      img_url: "",
+      categorys: [],
+      price_options: createPriceOptions(),
+      status: status,
+      limitedtime: limitedtime,
+      policycontent: policy,
+      detailcontent: detail,
+    };
 
     //Excute categorys
 
     const categoryssend = [];
 
-    categoryssend.push(findCategoryID);
+    categoryssend.push(findCategoryID());
 
     locations.map((location) => {
       categoryssend.push(location);
     });
+    submititem.categorys = [...categoryssend];
 
     //Excute priceoptions
 
     // Excute Image
+    let file = await fetch(image).then((r) => r.blob());
 
+    console.log(file);
     let body = new FormData();
     body.set("key", "821358b6cb84839ab5031d22a6594bdd");
-    body.append("image", image);
+    body.append("image", file);
     body.append("name", title);
     // body.append('expi ration',`${cleartime}`)
 
-    axios({
+    console.log("body", body);
+    const res = await axios({
       method: "post",
       url: "https://api.imgbb.com/1/upload",
       data: body,
-    }).then((result) => {
-      let image_url = "";
-      if (result.data.status == 200) {
-        image_url = result.data.data.display_url;
-        const submititem = {
-          key: `${category}`,
-          title: title,
-          img_url: image_url,
-          categorys: categoryssend,
-          price_options: createPriceOptions(),
-          status: status,
-        };
-
-        axios
-          .post(Request_Admin.postNewvoucher, submititem, {
-            headers: {
-              Authorization: `Basic ${info_Admin.accessToken}`,
-            },
-          })
-          .then((res) => {
-            if (res.status == 200) {
-              resetfield();
-            }
-          });
-      }
     });
+
+    submititem.img_url = res.data.data.display_url;
+
+    console.log(submititem);
+
+    await axios
+      .post(Request_Admin.postNewvoucher, submititem, {
+        headers: {
+          Authorization: `Basic ${info_Admin.accessToken}`,
+        },
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          resetfield();
+          setOnok(true);
+          clearPost();
+          setTimeout(() => {
+            setOnok(false);
+          }, [2000]);
+        }
+      });
   };
 
   const resetfield = () => {
@@ -323,8 +371,8 @@ const Addproduct = (props) => {
   const Displayoptions = () => {
     if (category == "CV") {
       return (
-        <Grid style={{ width: "100%" }}>
-          <Grid>
+        <Grid>
+          <Grid style={{ width: "100%" }}>
             <h5>Price</h5>
             <InputNumber
               style={{ width: "100%" }}
@@ -341,7 +389,7 @@ const Addproduct = (props) => {
 
     if (category == "DVHK") {
       return (
-        <Grid style={{ width: "100%" }}>
+        <Grid>
           <h5>Monthly options</h5>
 
           <Select
@@ -933,13 +981,93 @@ const Addproduct = (props) => {
     }
   };
 
+  const handleDateChange = (value) => {
+    setLimitedtime(value);
+  };
+
+  const onChangeSelect = (value) => {
+    displayPost();
+    setTypeselect(value);
+  };
+
+  const displayPost = () => {
+    quill?.clipboard.dangerouslyPasteHTML("");
+    if (!!content) quill?.clipboard.dangerouslyPasteHTML(content);
+  };
+
+  const clearPost = () => {
+    quill?.clipboard.dangerouslyPasteHTML("");
+  };
+
+  const { quill, quillRef, Quill } = useQuill({
+    modules: { blotFormatter: {} },
+  });
+
+  const insertToEditor = (url) => {
+    const range = quill.getSelection();
+    quill.insertEmbed(range.index, "image", url);
+  };
+
+  // Upload Image to Image Server such as AWS S3, Cloudinary, Cloud Storage, etc..
+  const saveToServer = async (file) => {
+    const body = new FormData();
+    body.set("key", "821358b6cb84839ab5031d22a6594bdd");
+    body.append("image", file);
+    body.append("name", file);
+    // body.append('expi ration',`${cleartime}`)
+
+    const res = await axios({
+      method: "post",
+      url: "https://api.imgbb.com/1/upload",
+      data: body,
+    });
+
+    insertToEditor(res.data.data.display_url);
+  };
+
+  // Open Dialog to select Image File
+  const selectLocalImage = () => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = () => {
+      const file = input.files[0];
+      saveToServer(file);
+    };
+  };
+
+  React.useEffect(() => {
+    if (quill) {
+      // Add custom handler for Image Upload
+      quill.getModule("toolbar").addHandler("image", selectLocalImage);
+      displayPost();
+    }
+  }, [quill]);
+
+  if (Quill && !quill) {
+    // const BlotFormatter = require('quill-blot-formatter');
+    Quill.register("modules/blotFormatter", BlotFormatter);
+  }
+
+  const onClickUpdate = () => {
+    let content = quill.root.innerHTML;
+
+    if (typeselect == "detail") {
+      setDetail(content);
+    }
+    if (typeselect == "policy") {
+      setPolicy(content);
+    }
+  };
   //render
 
   return (
     <Grid className="Box-container">
       {categorys != undefined ? (
         <Grid className=" Add-voucher">
-          <Grid container>
+          <Grid container className="flex">
             <Grid item={true} xs={6}>
               <Grid
                 container
@@ -1004,6 +1132,19 @@ const Addproduct = (props) => {
                     </Select>
                   </Grid>
                 </Grid>
+                {status == "SALE" ? (
+                  <Grid item={true}>
+                    <h5>Limited time</h5>
+                    <Grid item={true} xs={5} style={{ width: "100%" }}>
+                      <DatePicker
+                        selected={limitedtime}
+                        onChange={handleDateChange}
+                        dateFormat="Pp"
+                      />
+                    </Grid>
+                  </Grid>
+                ) : null}
+
                 <Grid item={true}>
                   <h5>TAGS</h5>
                   <Grid item={true} xs={5}>
@@ -1029,6 +1170,22 @@ const Addproduct = (props) => {
                   </Grid>
                 </Grid>
                 <Grid item={true}>
+                  <Grid item={true} xs={5}>
+                    {category != undefined ? Displayoptions() : null}
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+
+            <Grid item={true} xs={6}>
+              <Grid
+                container
+                direction="column"
+                columns={{ xs: 4, md: 6, sm: 2 }}
+                rowSpacing={2}
+                justifyContent="center"
+              >
+                <Grid className="Price-options" item={true}>
                   <h5>Demo image</h5>
                   <Grid item={true} xs={5}>
                     <img
@@ -1047,43 +1204,77 @@ const Addproduct = (props) => {
                 </Grid>
               </Grid>
             </Grid>
+          </Grid>
+          <Grid className="voucher-detail">
+            <Grid
+              container
+              display={"flex"}
+              flexDirection="column"
+              style={{ marginBottom: "20px" }}
+              className="option"
+            >
+              <Grid item={true} style={{ marginBottom: "20px" }}>
+                <h5> Detail and policy editor</h5>
+              </Grid>
+              <Grid item={true} md={4} style={{ marginBottom: "20px" }}>
+                <Select
+                  style={{ width: "100%" }}
+                  onChange={onChangeSelect}
+                  defaultValue={typeselect}
+                >
+                  <Option value={"detail"}>Thông tin chi tiết</Option>
+                  <Option value={"policy"}>Chính sách</Option>
+                </Select>
+              </Grid>
+            </Grid>
 
-            <Grid item={true} xs={6}>
-              <Grid
-                container
-                direction="column"
-                columns={{ xs: 4, md: 6, sm: 2 }}
-                rowSpacing={2}
-                justifyContent="center"
-              >
-                <Grid className="Price-options" item={true}>
-                  {category != undefined ? Displayoptions() : null}
+            <Grid className="textcontent">
+              <Grid className="wrapper">
+                <Grid className="content">
+                  <div ref={quillRef} />
                 </Grid>
+                <Grid container display={"flex"}>
+                  <Grid item={true}>
+                    <button onClick={onClickUpdate} className="button-13">
+                      SAVE
+                    </button>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
 
-                <Grid item={true} display="flex">
+            <Grid item={true} display="flex" style={{ marginTop: "30px" }}>
+              <Grid>
+                {" "}
+                {voucher != undefined ? (
                   <Grid>
-                    {" "}
-                    {voucher != undefined ? (
-                      <Grid>
-                        {onOk == false ? (
-                          <button onClick={onUpdate} className="update-btn">
-                            UPDATE
-                          </button>
-                        ) : (
-                          <Lottie
-                            options={defaultOptions}
-                            height={150}
-                            width={150}
-                          />
-                        )}
-                      </Grid>
+                    {onOk == false ? (
+                      <button onClick={onUpdate} className="update-btn">
+                        UPDATE
+                      </button>
                     ) : (
+                      <Lottie
+                        options={defaultOptions}
+                        height={150}
+                        width={150}
+                      />
+                    )}
+                  </Grid>
+                ) : (
+                  <Grid>
+                    {onOk == false ? (
                       <button onClick={onClickAdd} className="create-btn">
                         CREATE VOUCHER
                       </button>
+                    ) : (
+                      <Lottie
+                        options={defaultOptions}
+                        height={150}
+                        width={150}
+                      />
                     )}
                   </Grid>
-                </Grid>
+                )}
               </Grid>
             </Grid>
           </Grid>

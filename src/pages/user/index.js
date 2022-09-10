@@ -17,6 +17,7 @@ const User = ({ children }) => {
           position: "relative",
           zIndex: "0",
           minHeight: "500px",
+          width: "90vw",
           backgroundColor: "white",
         }}
       >

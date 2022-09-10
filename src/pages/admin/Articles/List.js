@@ -24,6 +24,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import successAnimation from "../Products/effectbtn/deletesuccess.json";
 import Lottie from "react-lottie";
+import Pagination from "@mui/material/Pagination";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -41,29 +42,39 @@ const ListPost = () => {
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
 
   const [isdetail, setDetail] = useState(false);
-
+  const [page, setPage] = useState(1);
   const [isupdate, setIsupdate] = useState(false);
 
   const [selectitem, setSelectitem] = useState({});
 
   const [open, setOpen] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(1);
   const [deletedone, setDeletedone] = useState(false);
 
   const [data, setData] = useState([]);
 
-  const reFreshData = () => {
-    axios.get(`${Request_Admin.getPost}`).then((res) => {
+  const reFreshData = (page) => {
+    setData([]);
+    setLoading(true);
+    axios.get(`${Request_Admin.getPost}?page=${page}`).then((res) => {
       if (res.status == 200) {
         let newdata = res.data;
-        setData([...newdata]);
+        console.log(newdata);
+        if (newdata.totalPage) setTotal(newdata.totalPage);
+        if (newdata.posts) setData(newdata.posts);
+        setLoading(false);
       }
     });
   };
 
   useEffect(() => {
+    reFreshData(1);
+  }, []);
+
+  useEffect(() => {
     if (isupdate == false) {
-      reFreshData();
+      reFreshData(1);
     }
   }, [isupdate]);
 
@@ -124,6 +135,11 @@ const ListPost = () => {
     setIsupdate(true);
   };
 
+  const handleChange = (event, value) => {
+    setPage(value);
+    reFreshData(value);
+  };
+
   const handleClickOpen = (item) => {
     setOpen(true);
     setSelectitem(item);
@@ -145,7 +161,7 @@ const ListPost = () => {
           setTimeout(() => {
             setDeletedone((o) => !o);
             setOpen(false);
-            reFreshData();
+            reFreshData(1);
           }, [2000]);
         }
       });
@@ -186,9 +202,12 @@ const ListPost = () => {
         </DialogActions>
       </Dialog>
       <Table
+        loading={loading}
+        pagination={false}
         dataSource={isupdate == true ? [] : data}
         columns={columns}
       ></Table>
+      <Pagination count={total} page={page} onChange={handleChange} />
     </Grid>
   );
 };

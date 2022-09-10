@@ -6,15 +6,15 @@ import { useEffect, useState, Suspense } from "react";
 import axios from "axios";
 import { Spin } from "antd";
 import { ConsoleSqlOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { Select } from "antd";
-
-import { Commonfc } from "../../../../Ultis/Commonfunction";
+import { Link } from "react-router-dom";
 import { addItem } from "../../../../Redux/Reducer/Cart";
 import { useDispatch } from "react-redux";
-import zIndex from "@mui/material/styles/zIndex";
+import CountdownTimer from "../../../../Components/Countdown/countdown";
+import { Commonfc } from "../../../../Ultis/Commonfunction";
 import { Tabs } from "antd";
+
 const { TabPane } = Tabs;
 
 const { Option } = Select;
@@ -29,8 +29,6 @@ const Detail = () => {
   const dispatch = useDispatch();
 
   let { slug } = useParams();
-
-  useEffect(() => {}, [slug]);
 
   //init value and state
 
@@ -49,11 +47,8 @@ const Detail = () => {
   const [duration, setDuration] = useState(0);
 
   const displaydetailByType = (type) => {
-    if (post.length > 0) {
-      return post.filter((item) => {
-        return item.type == type;
-      })[0].content;
-    }
+    if (type == "detail") return data.detailcontent;
+    else return data.policycontent;
   };
 
   const getdetail = () => {
@@ -69,6 +64,7 @@ const Detail = () => {
       .get(`${Request_User.findvoucher}/${slug}`)
       .then((res) => {
         setData(res.data);
+        console.log(res.data);
 
         if (res.data["key"] == "CV") {
           setPrice(res.data["price_options"]["price"]);
@@ -163,6 +159,7 @@ const Detail = () => {
 
   return (
     <Grid
+      container
       style={{
         backgroundColor: "white",
         minHeight: "600px",
@@ -173,125 +170,73 @@ const Detail = () => {
       }}
     >
       <Suspense fallback={<Spin indicator={antIcon} />}>
-        <Grid container spacing={1} className=" flex jus-center">
-          <Grid item={true} xs={5} className="flex jus-center">
-            <img style={{ width: "350px" }} src={data.img_url}></img>
-          </Grid>
+        <Grid item={true} style={{ width: "100%" }}>
+          <Grid
+            container
+            md={12}
+            xs={12}
+            className="detailTop-left flex jus-center"
+          >
+            <Grid item={true} md={3} style={{ position: "relative" }}>
+              <Grid
+                item={true}
+                style={{ position: "absolute", zIndex: 1 }}
+                className="cardstatus"
+              >
+                {data.status}
+              </Grid>
 
-          <Grid item={true} xs={7} className="voucher-info ">
-            <h2 style={{ fontSize: 30, marginTop: 20 }}>{data["title"]}</h2>
-            <Grid>
-              {data["categorys"] != undefined
-                ? data["categorys"].map((data, indx) => {
-                    return (
-                      <a key={indx} style={{ color: "blue" }}>
-                        {data.title}
-                      </a>
-                    );
-                  })
-                : null}
+              <Grid
+                display="flex"
+                justifyContent="center"
+                style={{
+                  position: "absolute",
+                  zIndex: 1,
+                  width: "100%",
+                  top: "50%",
+                }}
+              >
+                {" "}
+                {data.status == "SALE" ? (
+                  <Grid
+                    item={true}
+                    style={{ position: "absolute", zIndex: 1, width: "100%" }}
+                  >
+                    <CountdownTimer
+                      targetDate={data.limitedtime}
+                    ></CountdownTimer>
+                  </Grid>
+                ) : null}
+              </Grid>
+              <Grid item={true} style={{ position: "relative" }}>
+                <img style={{ width: "100%" }} src={data.img_url}></img>
+              </Grid>
             </Grid>
+            <Grid
+              item={true}
+              xs={6}
+              md={6}
+              style={{ marginLeft: "10px" }}
+              className="voucher-info "
+            >
+              <h2 style={{ fontSize: 30, marginTop: 20 }}>{data["title"]}</h2>
+              <Grid>
+                {data["categorys"] != undefined
+                  ? data["categorys"].map((data, indx) => {
+                      return (
+                        <a key={indx} style={{ color: "blue" }}>
+                          {data.title}
+                        </a>
+                      );
+                    })
+                  : null}
+              </Grid>
 
-            <Grid style={{ margin: "20px 20px 20px 0" }}>
-              {
-                //Key G
-                data["key"] == "DVG" ? (
-                  <Grid container spacing={2} className="flex options">
-                    <Grid item={true} xs={2}>
-                      Thời hạn
-                    </Grid>
-
-                    <Grid item={true} xs={6}>
-                      <Select
-                        defaultValue={
-                          data["price_options"]["duration"][0].value
-                        }
-                        style={{ width: "100%" }}
-                        placeholder="Choose duration"
-                        optionFilterProp="children"
-                        onChange={onChangeduration}
-                      >
-                        {data["price_options"]["duration"].map(
-                          (duration, indx) => {
-                            return (
-                              <Option key={indx} value={duration.value}>
-                                {duration.title} Tháng
-                              </Option>
-                            );
-                          },
-                        )}
-                      </Select>
-                    </Grid>
-                  </Grid>
-                ) : null
-              }
-
-              {
-                //Key HK
-
-                data["key"] == "DVHK" ? (
-                  <Grid container spacing={2} className="flex options">
-                    <Grid item={true} xs={2}>
-                      {" "}
-                      Gói tháng
-                    </Grid>
-
-                    <Grid item={true} xs={6}>
-                      <Select
-                        defaultValue={
-                          Commonfc.valuesofObj(
-                            data["price_options"]["package"][0],
-                          )[0]
-                        }
-                        style={{ width: "100%" }}
-                        placeholder="Choose package"
-                        optionFilterProp="children"
-                        onChange={onChangepackage}
-                      >
-                        {data["price_options"]["package"].map(
-                          (packages, indx) => {
-                            return (
-                              <Option key={indx} value={packages.value}>
-                                {packages.title} Tháng
-                              </Option>
-                            );
-                          },
-                        )}
-                      </Select>
-                    </Grid>
-                  </Grid>
-                ) : null
-              }
-              {
-                //Key ND
-
-                data["key"] == "DVND" ? (
-                  <Grid container spacing={2} className=" flex  options">
-                    <Grid item={true} className="flex" xs={10}>
-                      <Grid item={true} xs={2}>
-                        Màu sắc
-                      </Grid>
-
-                      <Grid item={true} xs={6}>
-                        <Select
-                          defaultValue={data["price_options"]["color"][0].value}
-                          style={{ width: "100%" }}
-                          placeholder="Choose color"
-                          optionFilterProp="children"
-                          onChange={onChangecolor}
-                        >
-                          {data["price_options"]["color"].map((color, indx) => {
-                            return (
-                              <Option key={indx} value={color.value}>
-                                {color.title}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Grid>
-                    </Grid>
-
-                    <Grid item={true} className="flex" xs={10}>
+              <Grid style={{ margin: "20px 20px 20px 0" }}>
+                {
+                  //Key G
+                  data["key"] == "DVG" ? (
+                    <Grid container spacing={2} className="flex options">
                       <Grid item={true} xs={2}>
                         Thời hạn
                       </Grid>
@@ -318,56 +263,36 @@ const Detail = () => {
                         </Select>
                       </Grid>
                     </Grid>
+                  ) : null
+                }
 
-                    <Grid item={true} className="flex" xs={10}>
+                {
+                  //Key HK
+
+                  data["key"] == "DVHK" ? (
+                    <Grid container spacing={2} className="flex options">
                       <Grid item={true} xs={2}>
-                        Số phòng
+                        {" "}
+                        Gói tháng
                       </Grid>
 
                       <Grid item={true} xs={6}>
                         <Select
-                          defaultValue={data["price_options"]["room"][0].title}
+                          defaultValue={
+                            Commonfc.valuesofObj(
+                              data["price_options"]["package"][0],
+                            )[0]
+                          }
                           style={{ width: "100%" }}
-                          placeholder="Choose duration"
+                          placeholder="Choose package"
                           optionFilterProp="children"
-                          onChange={onChangeRoom}
+                          onChange={onChangepackage}
                         >
-                          {data["price_options"]["room"].map((room, indx) => {
-                            return (
-                              <Option key={indx} value={room.value}>
-                                {room.title}
-                              </Option>
-                            );
-                          })}
-                        </Select>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                ) : null
-              }
-              {
-                //Key LK
-
-                data["key"] == "DVLK" ? (
-                  <Grid container spacing={2} className=" flex  options">
-                    <Grid item={true} className="flex" xs={10}>
-                      <Grid item={true} xs={2}>
-                        Hạn mức
-                      </Grid>
-
-                      <Grid item={true} xs={6}>
-                        <Select
-                          defaultValue={data["price_options"].duration[0].value}
-                          style={{ width: "100%" }}
-                          placeholder="Choose Credit"
-                          optionFilterProp="children"
-                          onChange={onChangeduration}
-                        >
-                          {data["price_options"].duration.map(
-                            (lineofcredit, indx) => {
+                          {data["price_options"]["package"].map(
+                            (packages, indx) => {
                               return (
-                                <Option key={indx} value={lineofcredit.value}>
-                                  {lineofcredit.title} Tháng
+                                <Option key={indx} value={packages.value}>
+                                  {packages.title} Tháng
                                 </Option>
                               );
                             },
@@ -375,45 +300,183 @@ const Detail = () => {
                         </Select>
                       </Grid>
                     </Grid>
-                  </Grid>
-                ) : null
-              }
-            </Grid>
+                  ) : null
+                }
+                {
+                  //Key ND
 
-            <Grid
-              container
-              spacing={1}
-              justifyContent="flex-start"
-              className="flex col total"
-            >
-              <Grid item={true} display="flex" xs={12}>
+                  data["key"] == "DVND" ? (
+                    <Grid container spacing={2} className=" flex  options">
+                      <Grid item={true} className="flex" xs={10}>
+                        <Grid item={true} xs={2}>
+                          Màu sắc
+                        </Grid>
+
+                        <Grid item={true} xs={6}>
+                          <Select
+                            defaultValue={
+                              data["price_options"]["color"][0].value
+                            }
+                            style={{ width: "100%" }}
+                            placeholder="Choose color"
+                            optionFilterProp="children"
+                            onChange={onChangecolor}
+                          >
+                            {data["price_options"]["color"].map(
+                              (color, indx) => {
+                                return (
+                                  <Option key={indx} value={color.value}>
+                                    {color.title}
+                                  </Option>
+                                );
+                              },
+                            )}
+                          </Select>
+                        </Grid>
+                      </Grid>
+
+                      <Grid item={true} className="flex" xs={10}>
+                        <Grid item={true} xs={2}>
+                          Thời hạn
+                        </Grid>
+
+                        <Grid item={true} xs={6}>
+                          <Select
+                            defaultValue={
+                              data["price_options"]["duration"][0].value
+                            }
+                            style={{ width: "100%" }}
+                            placeholder="Choose duration"
+                            optionFilterProp="children"
+                            onChange={onChangeduration}
+                          >
+                            {data["price_options"]["duration"].map(
+                              (duration, indx) => {
+                                return (
+                                  <Option key={indx} value={duration.value}>
+                                    {duration.title} Tháng
+                                  </Option>
+                                );
+                              },
+                            )}
+                          </Select>
+                        </Grid>
+                      </Grid>
+
+                      <Grid item={true} className="flex" xs={10}>
+                        <Grid item={true} xs={2}>
+                          Số phòng
+                        </Grid>
+
+                        <Grid item={true} xs={6}>
+                          <Select
+                            defaultValue={
+                              data["price_options"]["room"][0].title
+                            }
+                            style={{ width: "100%" }}
+                            placeholder="Choose duration"
+                            optionFilterProp="children"
+                            onChange={onChangeRoom}
+                          >
+                            {data["price_options"]["room"].map((room, indx) => {
+                              return (
+                                <Option key={indx} value={room.value}>
+                                  {room.title}
+                                </Option>
+                              );
+                            })}
+                          </Select>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  ) : null
+                }
+                {
+                  //Key LK
+
+                  data["key"] == "DVLK" ? (
+                    <Grid container spacing={2} className=" flex  options">
+                      <Grid item={true} className="flex" xs={10}>
+                        <Grid item={true} xs={2}>
+                          Hạn mức
+                        </Grid>
+
+                        <Grid item={true} xs={6}>
+                          <Select
+                            defaultValue={
+                              data["price_options"].duration[0].value
+                            }
+                            style={{ width: "100%" }}
+                            placeholder="Choose Credit"
+                            optionFilterProp="children"
+                            onChange={onChangeduration}
+                          >
+                            {data["price_options"].duration.map(
+                              (lineofcredit, indx) => {
+                                return (
+                                  <Option key={indx} value={lineofcredit.value}>
+                                    {lineofcredit.title} Tháng
+                                  </Option>
+                                );
+                              },
+                            )}
+                          </Select>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  ) : null
+                }
+              </Grid>
+
+              <Grid
+                container
+                justifyContent="flex-start"
+                className="flex col total"
+              >
                 Tổng :{" "}
                 {price != undefined
                   ? price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
                     " VND"
                   : 0}
               </Grid>
-            </Grid>
 
-            <Grid className="div_btn">
-              <Button
-                type="primary"
-                onClick={addTocart}
-                block
-                style={{ width: "50%", margin: 10 }}
-              >
-                Thêm Vào giỏ Hàng
-              </Button>
-              <Button type="red-7" block style={{ width: "50%", margin: 10 }}>
-                Mua Ngay
-              </Button>
+              {Commonfc.exPried(data.limitedtime) < 0 ? (
+                <Button type="primary" disabled className="btn-color">
+                  Ngưng bán
+                </Button>
+              ) : (
+                <Grid container spacing={1} className="div_btn">
+                  <Grid item={true} md={4}>
+                    <Button
+                      type="primary"
+                      onClick={addTocart}
+                      block
+                      style={{ width: "80%", margin: 10 }}
+                    >
+                      Thêm Vào giỏ Hàng
+                    </Button>
+                  </Grid>
+                  <Grid item={true} md={4}>
+                    <Link to="/cart">
+                      <Button
+                        type="red-7"
+                        onClick={addTocart}
+                        block
+                        style={{ width: "80%", margin: 10 }}
+                      >
+                        Mua Ngay
+                      </Button>
+                    </Link>
+                  </Grid>
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>
         <Grid
-          style={{ margin: "30px" }}
           container
           display="flex"
+          justifyContent="center"
           className="tab-voucherdetail"
         >
           <Grid item={true} md={6}>

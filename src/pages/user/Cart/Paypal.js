@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import axios from "axios";
-import { Request_User } from "../../../API/api";
+import { Request_User, host } from "../../../API/api";
 import { useDispatch, useSelector } from "react-redux";
 import { removeItem, clearItems } from "../../../Redux/Reducer/Cart";
+import { updatepaymentClient } from "../../../Redux/Reducer/Account";
+import socketIOClient from "socket.io-client";
 const PaypalButton = (props) => {
+  const socket = useRef();
+  socket.current = socketIOClient.connect(`${host}`);
   const initialOptions = {
     "client-id":
       "Af8rG_BzQB0X4GuvNvL0zQSv4J6KcynMmcPmCts-Nq6sRbQ8HBHm-71pIC1Q-nTXYGT3bApJkeNdQlBN",
@@ -35,10 +39,12 @@ const PaypalButton = (props) => {
       })
       .then((res) => {
         if (res.status == 200) {
-          dispatch(clearItems([]));
           props.showModal();
           props.alertcontent("Transaction successful!");
           props.ischeckout();
+          dispatch(clearItems([]));
+          dispatch(updatepaymentClient(payment));
+          socket.current.emit("payment", payment);
         } else {
           props.showModal();
           props.alertcontent("Transaction failed!");

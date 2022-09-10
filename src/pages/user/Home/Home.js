@@ -6,20 +6,17 @@ import { BrowserRouter as Router, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { clientLogin } from "../../../Redux/Reducer/Account";
-import { Commonfc } from "../../../Ultis/Commonfunction";
-import { addItem, removeItem } from "../../../Redux/Reducer/Cart";
 import Grid from "@mui/material/Grid";
 import Banner from "../../../Components/Banner/Banner";
-import CardItem from "../Vounchers/Card/index";
 import axios from "axios";
 import "./Home.css";
+import Article from "../Articles/Card/index";
 import { Request_User } from "../../../API/api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { Commonfc } from "../../../Ultis/Commonfunction";
+import CountdownTimer from "../../../Components/Countdown/countdown";
 const Home = () => {
   //define using
-  const dispatch = useDispatch();
+
   const state = useSelector((state) => (state = state));
   const [sreen, setScreen] = useState({
     size: 2,
@@ -28,9 +25,9 @@ const Home = () => {
   //local state
 
   const [topvoucher, Settopvoucher] = useState([]);
+  const [topposts, setTopposts] = useState([]);
 
   const mbhorizon = useMediaQuery("(max-width:320px)");
-
   const mbverti = useMediaQuery("(max-width:480px)");
 
   const menuimgstyle = {
@@ -69,7 +66,18 @@ const Home = () => {
 
   //Mount
 
+  const loadTopPost = () => {
+    console.log(Request_User.getTopPost);
+    axios.get(Request_User.getTopPost).then((res) => {
+      if (res) {
+        console.log(res.data);
+        setTopposts(res.data);
+      }
+    });
+  };
+
   useEffect(() => {
+    loadTopPost();
     axios
       .get(Request_User.topvoucher)
       .then((res) => {
@@ -93,14 +101,20 @@ const Home = () => {
 
   return (
     <div>
-      <section
-        style={{ position: "relative", zIndex: "1" }}
-        className="flex jus-center Slider"
-      >
-        <Banner></Banner>
+      <section style={{ position: "relative", zIndex: "1" }}>
+        {mbverti == true ? (
+          <Grid></Grid>
+        ) : (
+          <Grid className="flex jus-center Slider">
+            <Banner></Banner>
+          </Grid>
+        )}
       </section>
+
       <section
-        style={{ display: mbverti == true ? "none" : "flex" }}
+        style={{
+          display: mbverti == true ? "none" : "flex",
+        }}
         className="Main-menu"
       >
         <Grid
@@ -187,11 +201,12 @@ const Home = () => {
         </Grid>
       </section>
       <section className="Vouchers-box">
-        {topvoucher ? (
-          topvoucher.map((main, indx) => {
-            return (
-              <div>
+        <Grid style={{ width: "!00%" }} container className="flex jus-center">
+          {topvoucher ? (
+            topvoucher.map((main, indx) => {
+              return (
                 <div
+                  style={{ width: "100%" }}
                   className="productSection d-flex justify-content-center flex-column"
                   key={indx}
                 >
@@ -199,8 +214,38 @@ const Home = () => {
                   <div className="products">
                     {main["items"].map((item, indx) => {
                       return (
-                        <div className="card col-md-5 col-sm-12">
+                        <div
+                          style={{ position: "relative" }}
+                          className="card col-md-5 col-sm-12"
+                        >
                           <Link to={`vouchers/${item.slug}`}>
+                            <Grid
+                              style={{ position: "absolute", zIndex: 1 }}
+                              item={true}
+                              className="cardstatus"
+                            >
+                              {item.status}
+                            </Grid>
+                            {item.status == "SALE" ? (
+                              <Grid
+                                item={true}
+                                style={{
+                                  position: "absolute",
+                                  zIndex: 1,
+
+                                  width: "100%",
+                                  height: "100%",
+                                }}
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                className=""
+                              >
+                                <CountdownTimer
+                                  targetDate={item.limitedtime}
+                                ></CountdownTimer>
+                              </Grid>
+                            ) : null}
                             <img
                               className="card-img-top"
                               src={item.img_url}
@@ -211,10 +256,20 @@ const Home = () => {
                                 <label style={{ fontSize: "16px" }}>
                                   {item.title}
                                 </label>
-
-                                <Button type="primary" className="btn-color">
-                                  Xem thông tin...
-                                </Button>
+                                {Commonfc.exPried(item.limitedtime) < 0 &&
+                                item.status == "SALE" ? (
+                                  <Button
+                                    type="primary"
+                                    disabled
+                                    className="btn-color"
+                                  >
+                                    Ngưng bán
+                                  </Button>
+                                ) : (
+                                  <Button type="primary" className="btn-color">
+                                    Xem thông tin...
+                                  </Button>
+                                )}
                               </Grid>
                             </div>
                           </Link>
@@ -223,14 +278,35 @@ const Home = () => {
                     })}
                   </div>
                 </div>
-              </div>
+              );
+            })
+          ) : (
+            <div className="spinner-border text-info" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          )}
+        </Grid>
+      </section>
+
+      <section className="blog">
+        <Grid
+          style={{ width: "100%" }}
+          display="flex"
+          justifyContent="center"
+          className="productTitle"
+        >
+          <Link to="/blog">BLOG</Link>
+        </Grid>
+        <Grid container style={{ padding: "10px" }} spacing={2}>
+          {topposts.map((item) => {
+            console.log(item);
+            return (
+              <Grid item={true} md={3}>
+                <Article item={item}></Article>
+              </Grid>
             );
-          })
-        ) : (
-          <div className="spinner-border text-info" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        )}
+          })}
+        </Grid>
       </section>
     </div>
   );

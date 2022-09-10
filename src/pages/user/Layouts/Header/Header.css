@@ -36,7 +36,7 @@
 }
 .notification {
   text-decoration: none;
-  padding: 10px 15px;
+  padding: 0px 15px;
   position: relative;
   display: inline-block;
   border-radius: 2px;
@@ -47,10 +47,19 @@
 
 .notification .badge {
   position: absolute;
-  top: 4px;
-  right: 5px;
-  padding: 5px 10px;
+  top: -7px;
+  right: 1px;
+  padding: 4px 8px;
   border-radius: 50%;
   background-color: red;
   color: white;
+  font-size: 15px;
+}
+
+.saleimg:hover {
+  transform: rotate(-10deg);
+  -webkit-transform: rotate(-10deg);
+  -moz-transform: rotate(-10deg);
+  -ms-transform: rotate(-10deg);
+  -o-transform: rotate(-10deg);
 }

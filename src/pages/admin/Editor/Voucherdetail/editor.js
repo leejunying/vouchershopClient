@@ -2,15 +2,9 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useQuill } from "react-quilljs";
 import BlotFormatter from "quill-blot-formatter";
-import "quill/dist/quill.snow.css";
-import axios from "axios";
-import "./styles.css";
-import { Grid } from "@mui/material";
-import "../../Products/Addnew.css";
-import { Request_Admin, Request_User } from "../../../../API/api";
+
 import successAnimation from "../../Products/effectbtn/successbtn.json";
 import Lottie from "react-lottie";
-import { useSelector } from "react-redux";
 
 const defaultOptions = {
   loop: true,
@@ -22,61 +16,46 @@ const defaultOptions = {
 };
 
 const Editor = (props) => {
-  const info_Admin = useSelector((state) => state["account"]["Admin"]);
-
   //for voucher detail post
-  const { voucherId, type } = props || null;
-  const [detailpost, setDetailpost] = useState([]);
-  const [postid, setPostid] = useState("");
+  const { policy, detail, type } = props || "";
+  const { voucher } = props || {};
   const [post, setPost] = useState("");
   const [success, setSuccess] = useState(false);
   //for post
-  const Loadingpost = () => {
-    if (voucherId != null) {
-      axios
-        .get(Request_Admin.getDetailpostByVoucherid(voucherId))
-        .then((res) => {
-          if (res.status == 200) setDetailpost(res.data);
-          filterPostandsetPost(res.data, type);
-        });
-    }
+
+  const MountPost = () => {
+    setPost(voucher.detailcontent);
   };
 
-  const filterPostandsetPost = (array, key) => {
-    let found = array.filter((item) => {
-      return item.type == key;
-    })[0];
-    let id = found?._id;
-    let post = found?.content;
-    if (id) setPostid(found._id);
-
-    if (post) setPost(post);
+  const Loadingpost = () => {
+    if (type == "detail") setPost(detail);
+    if (type == "policy") setPost(policy);
   };
 
   const displayPost = () => {
-    if (post.length == 0) quill?.clipboard.dangerouslyPasteHTML("");
-    else quill?.clipboard.dangerouslyPasteHTML(post);
+    if (!!post) quill?.clipboard.dangerouslyPasteHTML(post);
+    else quill?.clipboard.dangerouslyPasteHTML("");
   };
 
   useEffect(() => {
-    Loadingpost();
+    MountPost();
   }, []);
 
   useEffect(() => {
     if (success == true) {
-      filterPostandsetPost(detailpost, type);
       displayPost();
     }
   }, [success]);
 
   useEffect(() => {
-    displayPost();
-  }, [post]);
-
-  useEffect(() => {
-    filterPostandsetPost(detailpost, type);
+    Loadingpost();
     displayPost();
   }, [type]);
+
+  useEffect(() => {
+    console.log(post);
+    displayPost();
+  }, [post]);
 
   const { quill, quillRef, Quill } = useQuill({
     modules: { blotFormatter: {} },
@@ -84,7 +63,6 @@ const Editor = (props) => {
 
   const insertToEditor = (url) => {
     const range = quill.getSelection();
-
     quill.insertEmbed(range.index, "image", url);
   };
 
@@ -132,80 +110,24 @@ const Editor = (props) => {
 
   const onClickUpdate = () => {
     let content = quill.root.innerHTML;
-    let objput = {
-      id: postid,
-      type: type,
-      content: content,
-    };
-    axios
-      .put(Request_Admin.putDetailpost, objput, {
-        headers: {
-          Authorization: `Basic ${info_Admin.accessToken}`,
-        },
-      })
-      .then((res) => {
-        if (res.status == 200) {
-          setSuccess(true);
-          setTimeout(() => {
-            setSuccess(false);
-          }, [2000]);
-        }
-      });
-  };
-
-  const onClickAdd = () => {
-    let content = quill.root.innerHTML;
-
-    let objpost = {
-      voucherid: voucherId,
-      type: type,
-      content: content,
-    };
-
-    axios
-      .put(Request_Admin.postDetailpost, objpost, {
-        headers: {
-          Authorization: `Basic ${info_Admin.accessToken}`,
-        },
-      })
-      .then((res) => {
-        if (res.status == 200) {
-          setSuccess(true);
-          setTimeout(() => {
-            setSuccess(false);
-          }, [2000]);
-        }
-      });
+    if (type == "detail") props.setDetail(content);
+    if (type == "policy") props.setPolicy(content);
   };
 
   const displayBtn = () => {
-    const findpost =
-      detailpost.filter((item) => {
-        return item.type == type;
-      }) || null;
-    if (findpost.length == 0) {
-      return !!success ? (
-        <Lottie options={defaultOptions} height={150} width={150} />
-      ) : (
-        <button onClick={onClickAdd} className="create-btn">
-          ADD POST
-        </button>
-      );
-    } else {
-      return (
-        <Grid container display={"flex"}>
-          <Grid item={true}>
-            {!!success ? (
-              <Lottie options={defaultOptions} height={150} width={150} />
-            ) : (
-              <button onClick={onClickUpdate} className="update-btn">
-                UPDATE POST
-              </button>
-            )}
-          </Grid>
+    return (
+      <Grid container display={"flex"}>
+        <Grid item={true}>
+          {!!success ? (
+            <Lottie options={defaultOptions} height={150} width={150} />
+          ) : (
+            <button onClick={onClickUpdate} className="button-13">
+              SAVE
+            </button>
+          )}
         </Grid>
-      );
-    }
+      </Grid>
+    );
   };
 
   return (

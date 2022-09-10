@@ -24,6 +24,8 @@ import Slide from "@mui/material/Slide";
 import successAnimation from "../Products/effectbtn/successbtn.json";
 import { Input } from "antd";
 import Lottie from "react-lottie";
+import Pagination from "@mui/material/Pagination";
+
 const { TextArea } = Input;
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -40,6 +42,11 @@ const { Option } = Select;
 
 const Listpending = () => {
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
+  const [loading, setLoading] = useState(false);
+
+  const [page, setPage] = useState(1);
+
+  const [total, setTotal] = useState(1);
 
   const [onsave, setOnSave] = useState(false);
 
@@ -55,28 +62,35 @@ const Listpending = () => {
 
   const [data, setData] = useState([]);
 
-  const reFreshData = () => {
+  const reFreshData = (page) => {
+    setData([]);
+    setLoading(true);
     axios
-      .get(`${Request_Admin.getPayment}`, {
+      .get(`${Request_Admin.getPayment}?page=${page}`, {
         headers: { Authorization: `Basic ${info_Admin.accessToken}` },
       })
       .then((res) => {
         if (res.status == 200) {
           let newdata = res.data;
-
-          newdata = newdata.filter((item) => {
+          newdata.payments = newdata.payments.filter((item) => {
             return item.status == "pending";
           });
-          setData([...newdata]);
+          if (newdata.totalPage) setTotal(newdata.totalPage);
+          if (newdata.payments) setData(newdata.payments);
+          setLoading(false);
         }
       });
   };
 
   useEffect(() => {
-    reFreshData();
+    reFreshData(1);
+  }, []);
+
+  useEffect(() => {
+    reFreshData(1);
   }, [deletedone]);
   useEffect(() => {
-    reFreshData();
+    reFreshData(1);
   }, [savedone]);
 
   const columns = [
@@ -163,6 +177,11 @@ const Listpending = () => {
       ),
     },
   ];
+
+  const handleChange = (event, value) => {
+    setPage(value);
+    reFreshData(value);
+  };
 
   const handleClickOpen = (key, item) => {
     setOpen(true);
@@ -309,7 +328,13 @@ const Listpending = () => {
           ) : null}
         </DialogActions>
       </Dialog>
-      <Table dataSource={data} columns={columns}></Table>
+      <Table
+        loading={loading}
+        pagination={false}
+        dataSource={data}
+        columns={columns}
+      ></Table>
+      <Pagination count={total} page={page} onChange={handleChange} />
     </Grid>
   );
 };

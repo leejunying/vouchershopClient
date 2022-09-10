@@ -1,4 +1,5 @@
 import { SettingsOverscanOutlined } from "@mui/icons-material";
+import moment from "moment";
 
 export const Isonsharelocation = () => {
   if ("geolocation" in navigator) {
@@ -28,5 +29,29 @@ export const Commonfc = {
       setarray.add(el[`${objKey}`]);
       return !duplicate;
     });
+  },
+  deadLine: (date) => {
+    var limitedDate = new Date(date);
+    var nowDate = new Date();
+    var nowTime = moment(nowDate.getTime());
+    var limitedTime = moment(limitedDate.getTime());
+
+    const diff = limitedTime.diff(nowTime);
+    const diffDuration = moment.duration(diff);
+    console.log("duration", diffDuration);
+    const result =
+      nowDate.getTime() + diffDuration.days() * 24 * 60 * 60 * 1000;
+    return result;
+  },
+  exPried: (date) => {
+    var limitedDate = new Date(date);
+    var nowDate = new Date();
+    var nowTime = moment(nowDate.getTime());
+    var limitedTime = moment(limitedDate.getTime());
+
+    const diff = limitedTime.diff(nowTime);
+    const diffDuration = moment.duration(diff);
+
+    return diffDuration.milliseconds();
   },
 };

@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "antd/dist/antd.css";
-import { Layout, Menu, Breadcrumb } from "antd";
+import { Layout, Menu, Breadcrumb, Tag } from "antd";
 import {
   UserOutlined,
   NotificationOutlined,
   DollarOutlined,
   FileWordOutlined,
   DatabaseOutlined,
+  ContainerOutlined,
 } from "@ant-design/icons";
 import "./dashboard.css";
 import "../admin.main.css";
@@ -22,6 +23,12 @@ import Listpending from "../Bill/Listpending";
 import Listsuccess from "../Bill/Listsucess";
 import User from "../User/User";
 import AddUser from "../User/AddUser";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Grid } from "@mui/material";
+import { io } from "socket.io-client";
+import { host, Request_Admin } from "../../../API/api";
+import axios, { Axios } from "axios";
+import socketIOClient from "socket.io-client";
 
 const { Header, Content, Sider } = Layout;
 
@@ -59,14 +66,14 @@ const items2 = [
       { subKey: "8", sublabel: "Đã thanh toán" },
     ],
   },
-  {
-    icon: NotificationOutlined,
-    titleName: "Liên hệ",
-    child: [
-      { subKey: "9", sublabel: "Chi tiết" },
-      { subKey: "10", sublabel: "Gửi phản hồi" },
-    ],
-  },
+  // {
+  //   icon: NotificationOutlined,
+  //   titleName: "Liên hệ",
+  //   child: [
+  //     { subKey: "9", sublabel: "Chi tiết" },
+  //     { subKey: "10", sublabel: "Gửi phản hồi" },
+  //   ],
+  // },
 ].map((data, index) => {
   const key = data.titleName;
   return {
@@ -83,11 +90,18 @@ const items2 = [
 });
 
 const Dashboard = () => {
+  const socket = useRef();
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
 
   // console.log(info_Admin);
 
   //State
+
+  const [received, setReceived] = useState({});
+
+  const [cod, setCod] = useState(0);
+  const [bill, setBill] = useState(0);
+  const [user, setUser] = useState(0);
   const [selected, setSelected] = useState(1);
 
   const onClickMenu = (e) => {
@@ -95,6 +109,29 @@ const Dashboard = () => {
 
     console.log(selected);
   };
+
+  useEffect(() => {
+    //mount
+    axios.get(`${Request_Admin.getCountPayment}`).then((res) => {
+      console.log(res);
+      console.log(res);
+      if (res) setReceived(res.data);
+    });
+
+    socket.current = socketIOClient.connect(`${host}`);
+
+    //realtime
+    socket.current.on("newpayment", (mes) => {
+      console.log("newpayment", mes);
+      setReceived(mes);
+      console.log(mes);
+    });
+  }, []);
+
+  useEffect(() => {
+    setCod(received.pending);
+    setBill(received.success);
+  }, [received]);
 
   //State update
 
@@ -119,8 +156,69 @@ const Dashboard = () => {
       <Redirect
         to={info_Admin["isAdmin"] == true ? "/admin/dashboard" : "/admin"}
       ></Redirect>
-      <Header className="header">
-        <div className="logo">Admin page</div>
+      <Header style={{ padding: "15px" }} className="header">
+        <Grid container display="flex" alignItems="center">
+          <Grid item={true} md={3}>
+            {" "}
+            <div className="logo">Admin page</div>{" "}
+          </Grid>
+          <Grid item={true} md={6}>
+            {" "}
+          </Grid>
+          <Grid
+            item={true}
+            md={3}
+            display="flex"
+            justifyContent=" space-evenly"
+          >
+            <Grid
+              onClick={() => setSelected(8)}
+              item={true}
+              display="Flex"
+              className="header-item"
+            >
+              <label style={{ color: "white", cursor: "pointer" }}>
+                INCOME
+              </label>
+              <Grid className="notification">
+                <Grid>
+                  <DollarOutlined
+                    style={{
+                      color: "white",
+                      fontSize: "25px",
+                      cursor: "pointer",
+                    }}
+                  ></DollarOutlined>
+                </Grid>
+                <span className="badge">{bill}</span>
+              </Grid>
+            </Grid>
+
+            <Grid
+              onClick={() => setSelected(7)}
+              style={{ cursor: "pointer" }}
+              item={true}
+              display="flex"
+              className="header-item"
+            >
+              <label style={{ color: "white", cursor: "pointer" }}>
+                NEW ORDER
+              </label>
+              <Grid className="notification">
+                <Grid>
+                  <ContainerOutlined
+                    style={{
+                      color: "white",
+                      fontSize: "25px",
+                      cursor: "pointer",
+                    }}
+                  ></ContainerOutlined>
+                </Grid>
+                <span className="badge">{cod}</span>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </Header>
       <Layout>
         <Sider width={300} className="site-layout-background">

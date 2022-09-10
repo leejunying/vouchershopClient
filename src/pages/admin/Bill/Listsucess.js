@@ -13,18 +13,10 @@ import { Select } from "antd";
 import { Alert, Spin } from "antd";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Tooltip } from "antd";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import successAnimation from "../Products/effectbtn/successbtn.json";
-import ApexCharts from "apexcharts";
-import Lottie from "react-lottie";
 import Chart from "react-apexcharts";
+import Pagination from "@mui/material/Pagination";
 import "./table.css";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -42,33 +34,31 @@ const { Option } = Select;
 
 const Listsuccess = () => {
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
+  const [loading, setLoading] = useState(false);
 
-  const [onsave, setOnSave] = useState(false);
+  const [page, setPage] = useState(1);
 
-  const [ondelete, setOnDelete] = useState(false);
-
-  const [deletedone, setDeletedone] = useState(false);
-
-  const [savedone, setSavedone] = useState(false);
-
-  const [selectitem, setSelectitem] = useState({});
-
-  const [open, setOpen] = useState(false);
+  const [total, setTotal] = useState(1);
 
   const [data, setData] = useState([]);
+  const reFreshData = (page) => {
+    setData([]);
+    setLoading(true);
 
-  const reFreshData = () => {
+    console.log(Request_Admin.getPayment);
     axios
-      .get(`${Request_Admin.getPayment}`, {
+      .get(`${Request_Admin.getPayment}?page=${page}`, {
         headers: { Authorization: `Basic ${info_Admin.accessToken}` },
       })
       .then((res) => {
         if (res.status == 200) {
           let newdata = res.data;
-          newdata = newdata.filter((item) => {
+          newdata.payments = newdata.payments.filter((item) => {
             return item.status == "success";
           });
-          setData([...newdata]);
+          if (newdata.totalPage) setTotal(newdata.totalPage);
+          if (newdata.payments) setData(newdata.payments);
+          setLoading(false);
         }
       });
   };
@@ -94,6 +84,10 @@ const Listsuccess = () => {
       0,
     );
     return result;
+  };
+  const handleChange = (event, value) => {
+    setPage(value);
+    reFreshData(value);
   };
 
   const totalbyMonth = () => {
@@ -134,8 +128,7 @@ const Listsuccess = () => {
     ],
   };
   useEffect(() => {
-    reFreshData();
-    console.log(data);
+    reFreshData(1);
     totalbyMonth();
   }, []);
 
@@ -208,19 +201,6 @@ const Listsuccess = () => {
     },
   ];
 
-  const columns2 = [
-    {
-      title: "INCOME",
-      dataIndex: "income",
-      key: "income",
-    },
-    {
-      title: "MONTH",
-      dataIndex: "month",
-      key: "month",
-    },
-  ];
-
   return (
     <Grid>
       {!!data ? (
@@ -257,7 +237,8 @@ const Listsuccess = () => {
         </Grid>
       ) : null}
       <Grid style={{ marginTop: "20px" }}>
-        <Table dataSource={data} columns={columns}></Table>
+        <Table loading={loading} dataSource={data} columns={columns}></Table>
+        <Pagination count={total} page={page} onChange={handleChange} />
       </Grid>
     </Grid>
   );

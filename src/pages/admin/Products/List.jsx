@@ -15,9 +15,7 @@ import { Alert, Spin } from "antd";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Tooltip } from "antd";
-
 import Addproduct from "./Addnew";
-import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -27,7 +25,9 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import successAnimation from "./effectbtn/deletesuccess.json";
 import Lottie from "react-lottie";
-import VoucherDetail from "./Vouchersdetail";
+
+import Pagination from "@mui/material/Pagination";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -44,7 +44,10 @@ const { Option } = Select;
 const ListVouchers = () => {
   const info_Admin = useSelector((state) => state["account"]["Admin"]);
 
-  const [isdetail, setDetail] = useState(false);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(1);
+
+  const [loading, setLoading] = useState(false);
 
   const [isupdate, setIsupdate] = useState(false);
 
@@ -56,20 +59,27 @@ const ListVouchers = () => {
 
   const [data, setData] = useState([]);
 
-  const reFreshData = () => {
-    axios.get(`${Request_Admin.getAllvoucher}`).then((res) => {
+  const reFreshData = (page) => {
+    setData([]);
+    setLoading(true);
+    axios.get(`${Request_Admin.getAllvoucher}page=${page}`).then((res) => {
       if (res.status == 200) {
         let newdata = res.data;
-
-        console.log(res.data);
-        setData([...newdata]);
+        console.log(newdata);
+        if (newdata.totalPage) setTotal(newdata.totalPage);
+        if (newdata.voucher) setData(newdata.voucher);
+        setLoading(false);
       }
     });
   };
 
   useEffect(() => {
+    reFreshData(1);
+  }, []);
+
+  useEffect(() => {
     if (isupdate == false) {
-      reFreshData();
+      reFreshData(1);
     }
   }, [isupdate]);
 
@@ -77,22 +87,19 @@ const ListVouchers = () => {
     {
       title: "TITLE",
       dataIndex: "title",
-      key: "title",
     },
     {
       title: "STATUS",
       dataIndex: "status",
-      key: "status",
     },
     {
       title: "CATEGORY",
       dataIndex: "key",
-      key: "key",
     },
     {
       title: "TAG",
       dataIndex: "categorys",
-      key: "tag",
+
       render: (_, record) => (
         <span>
           {record.categorys.map((tag, index) => {
@@ -107,7 +114,7 @@ const ListVouchers = () => {
     },
     {
       title: "IMAGE",
-      key: "image",
+
       dataIndex: "img_url",
       render: (_, record) => (
         <Space size="middle">
@@ -133,16 +140,6 @@ const ListVouchers = () => {
             />
           </Tooltip>
 
-          <Tooltip placement="top" title="Detail">
-            <FontAwesomeIcon
-              onClick={() => handleClickDetail(item)}
-              style={{ cursor: "pointer" }}
-              icon={faPager}
-              id="icon"
-              className="d-flex align-items-center"
-            />
-          </Tooltip>
-
           <Tooltip placement="top" title="Delete">
             <FontAwesomeIcon
               onClick={() => handleClickOpen(item)}
@@ -156,6 +153,12 @@ const ListVouchers = () => {
       ),
     },
   ];
+
+  const handleChange = (event, value) => {
+    setPage(value);
+    reFreshData(value);
+  };
+
   const onClickUpdate = (item) => {
     console.log("selected", item);
     setSelectitem(item);
@@ -164,12 +167,6 @@ const ListVouchers = () => {
 
   const handleClickOpen = (item) => {
     setOpen(true);
-    setSelectitem(item);
-  };
-
-  const handleClickDetail = (item) => {
-    console.log(item);
-    setDetail(true);
     setSelectitem(item);
   };
 
@@ -189,7 +186,7 @@ const ListVouchers = () => {
           setTimeout(() => {
             setDeletedone((o) => !o);
             setOpen(false);
-            reFreshData();
+            reFreshData(1);
           }, [2000]);
         }
       });
@@ -201,14 +198,6 @@ const ListVouchers = () => {
     );
   }
 
-  if (!!isdetail) {
-    return (
-      <VoucherDetail
-        backtoList={() => setDetail(false)}
-        voucherId={selectitem._id}
-      ></VoucherDetail>
-    );
-  }
   return (
     <Grid>
       <Dialog
@@ -237,10 +226,15 @@ const ListVouchers = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      {console.log(data)}
       <Table
+        loading={loading}
+        pagination={false}
+        //
         dataSource={isupdate == true ? [] : data}
         columns={columns}
       ></Table>
+      <Pagination count={total} page={page} onChange={handleChange} />
     </Grid>
   );
 };

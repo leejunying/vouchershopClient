@@ -1,9 +1,11 @@
-const host = "http://localhost:5000";
+export const host = "http://localhost:5000";
 export const Request_User = {
   register: `${host}/auth/register`, //post
   login: `${host}/auth/login`, //post
   topvoucher: `${host}/voucher/top`, //get
   findvoucher: `${host}/voucher/find`, //get
+  getslidevoucher: `${host}/voucher/slide`,
+
   getsearchvoucher: (text) => {
     return `${host}/voucher/search/${text}`;
   },
@@ -11,6 +13,16 @@ export const Request_User = {
     return `${host}/voucher/filter?key=${key}&&page=${page}`;
   }, //get + query
   submitpayment: `${host}/payment`, //post
+  getTopPost: `${host}/post/top`,
+
+  //profile
+  putPassword: `${host}/user/password`,
+  putInfo: `${host}/user`,
+  ///post
+  getPost: `${host}/post`, //query by page
+  getPostByID: (id) => {
+    return `${host}/post/find?id=${id}`;
+  },
 };
 export const Request_Admin = {
   ///////voucher
@@ -20,6 +32,7 @@ export const Request_Admin = {
   deleteVoucherById: `${host}/voucher`,
   getvoucherbykey: `${host}/voucher?`, //get (categorykey="all||key name"&&page="")
   getallvoucher: `${host}/voucher`, //get
+
   getDetailpostByVoucherid: (voucherid) => {
     return `${host}/detailpost?voucherid=${voucherid}`;
   }, //querybyID voucherid=
@@ -35,6 +48,7 @@ export const Request_Admin = {
   putPost: `${host}/post`, //verify admin , body = {categoryid,title,author}
   deletePost: `${host}/post`, //verify admin , body _id
   ///////Payment
+  getCountPayment: `${host}/payment/count`,
   getPayment: `${host}/payment`,
   putPayment: `${host}/payment`,
   deletePayment: `${host}/payment`,

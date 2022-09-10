@@ -19,6 +19,7 @@ import Detail from "./pages/user/Vounchers/Detail/detail";
 import Cart from "./pages/user/Cart/Cart";
 import Notfound from "./pages/user/notfound/notfound";
 import Categorys from "./pages/user/Categorjy/Categorys";
+import UserProfile from "./pages/user/UserProfile/UserProfile";
 function App() {
   return (
     <div className="App">
@@ -41,14 +42,18 @@ function App() {
               <Switch>
                 <Route path="/" exact component={Home}></Route>
                 <Route path="/contact" component={Contacts}></Route>
-                <Route path="/post" component={ArticlesPanel}></Route>
+                <Route path="/blog" component={ArticlesPanel}></Route>
                 <Route path="/post/:postid" component={Article}></Route>
-                {/* <Route path="/checkout" component={CheckOut}></Route> */}
                 <Route path="/vouchers/:slug" component={Detail}></Route>
                 <Route path="/login" component={SignIn}></Route>
                 <Route path="/register" component={SignUp}></Route>
                 <Route path="/cart" component={Cart}></Route>
                 <Route path="/categorys/:type" component={Categorys}></Route>
+                <Route
+                  path="/profile/:username"
+                  exact
+                  component={UserProfile}
+                ></Route>
                 <Route component={Notfound} />
               </Switch>
             </User>

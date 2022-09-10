@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./Cart.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,15 +17,24 @@ import { Select, InputNumber } from "antd";
 import PaypalButton from "./Paypal";
 import location from "./../../../Ultis/local.json";
 import axios from "axios";
-import { Request_User } from "../../../API/api";
+import { Request_User, host } from "../../../API/api";
 import { Modal } from "antd";
-
+import socketIOClient from "socket.io-client";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import { updatepaymentClient } from "../../../Redux/Reducer/Account";
 const Cart = () => {
+  const socket = useRef();
+  socket.current = socketIOClient.connect(`${host}`);
+
   const { Option } = Select;
 
   const ArrLocation = [...location];
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const [useaddress, setUseAddress] = useState("yes");
   //information State
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
@@ -42,10 +51,11 @@ const Cart = () => {
   const [location3, setLocation3] = useState("An Phú Tây");
 
   const [selectopt, setSelectopt] = useState("COD");
+
   const data = useSelector((state) => (state = state.cart.items));
   const total = data
     .map((data) => {
-      console.log(data);
+      // console.log(data);
       data = data.price;
 
       return Number(data);
@@ -133,7 +143,7 @@ const Cart = () => {
     })[0].districts;
     // console.log("L2", resultL2);
 
-    console.log(resultL2);
+    // console.log(resultL2);
     return resultL2;
   };
 
@@ -158,6 +168,12 @@ const Cart = () => {
 
   const onChangeCheckOut = (value) => {
     setSelectopt(value);
+  };
+
+  const handleChangeAddress = (event) => {
+    setUseAddress(event.target.value);
+    if (event.target.value == "no") setAddress("");
+    else setAddress(user.address);
   };
 
   const CheckOut = () => {
@@ -187,7 +203,6 @@ const Cart = () => {
     };
 
     if (errAddress == false || errPhone == false) {
-      console.log(payment);
       axios
         .post(Request_User.submitpayment, payment, {
           headers: {
@@ -196,7 +211,9 @@ const Cart = () => {
         })
         .then((res) => {
           if (res.status == 200) {
+            socket.current.emit("payment", payment);
             dispatch(clearItems([]));
+            dispatch(updatepaymentClient(payment));
             setIsCheckOut(false);
             showModal(true);
             setAlertcontent("Bạn đã đặt thành công xin hãy chờ liên hệ");
@@ -375,82 +392,131 @@ const Cart = () => {
                 value={phone}
               ></TextField>
             </Grid>
-            <Grid md={12} display="flex" item={true}>
-              <Grid style={{ marginRight: "10px" }} item={true} md={4}>
-                <h6>Tỉnh/thành phố</h6>
-                <Select
-                  onChange={onChangeL1}
-                  defaultValue="Hồ Chí Minh"
-                  placeholder="Tỉnh / thành phố"
-                  style={{ width: "100%" }}
-                  filterSort={(optionA, optionB) =>
-                    optionA > optionB ? -1 : 1
-                  }
-                >
-                  {ArrLocation.map((province) => {
-                    return (
-                      <Option key={province} value={province.name}>
-                        {province.name}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Grid>
 
-              <Grid style={{ marginRight: "10px" }} md={4} item={true}>
-                <h6>Quận / huyện</h6>
-                <Select
-                  value={location2}
-                  onChange={onChangeL2}
-                  placeholder="Quận/huyện"
-                  style={{ width: "100%" }}
+            <Grid style={{ marginRight: "10px" }} md={12} item={true}>
+              <FormControl>
+                <RadioGroup
+                  aria-labelledby="demo-radio-buttons-group-label"
+                  defaultValue="female"
+                  name="radio-buttons-group"
+                  value={useaddress}
+                  onChange={handleChangeAddress}
                 >
-                  {LoadL2() != undefined
-                    ? LoadL2().map((districts) => {
-                        return (
-                          <Option key={districts} value={districts.name}>
-                            {districts.name}
-                          </Option>
-                        );
-                      })
-                    : null}
-                </Select>
-              </Grid>
-              <Grid item={true} md={3}>
-                <h6>Phường / xã</h6>
-                <Select
-                  value={location3}
-                  onChange={onChangeL3}
-                  placeholder="Phường/xã"
-                  style={{ width: "100%" }}
-                >
-                  {!!LoadL3()
-                    ? LoadL3()
-                        .map((item) => {
+                  <FormControlLabel
+                    value="yes"
+                    control={<Radio />}
+                    label="Dùng địa chỉ trong tài khoản"
+                  />
+                  <FormControlLabel
+                    value="no"
+                    control={<Radio />}
+                    label="Dùng địa chỉ mới"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+
+            <Grid md={12} display="flex" item={true}>
+              {useaddress == "yes" ? (
+                <Grid md={8} item={true}>
+                  {" "}
+                  <Grid md={8} item={true}>
+                    <TextField
+                      required
+                      error={errAddress}
+                      helperText={
+                        errAddress == true ? "Địa chỉ không được để trống" : ""
+                      }
+                      value={address}
+                      onChange={onChangeAddress}
+                      style={{ width: "100%" }}
+                      label="Dịa chỉ"
+                    ></TextField>
+                  </Grid>
+                </Grid>
+              ) : (
+                <Grid md={8} item={true}>
+                  <Grid container spacing={2}>
+                    <Grid item={true} md={12}>
+                      <h6>Tỉnh/thành phố</h6>
+                      <Select
+                        onChange={onChangeL1}
+                        defaultValue="Hồ Chí Minh"
+                        placeholder="Tỉnh / thành phố"
+                        style={{ width: "100%" }}
+                        filterSort={(optionA, optionB) =>
+                          optionA > optionB ? -1 : 1
+                        }
+                      >
+                        {ArrLocation.map((province) => {
                           return (
-                            <Option key={item} value={item.name}>
-                              {item.name}
+                            <Option key={province} value={province.name}>
+                              {province.name}
                             </Option>
                           );
-                        })
-                        .sort()
-                    : null}
-                </Select>
-              </Grid>
+                        })}
+                      </Select>
+                    </Grid>
+                    <Grid md={4} item={true}>
+                      <h6>Quận / huyện</h6>
+                      <Select
+                        value={location2}
+                        onChange={onChangeL2}
+                        placeholder="Quận/huyện"
+                        style={{ width: "100%" }}
+                      >
+                        {LoadL2() != undefined
+                          ? LoadL2().map((districts) => {
+                              return (
+                                <Option key={districts} value={districts.name}>
+                                  {districts.name}
+                                </Option>
+                              );
+                            })
+                          : null}
+                      </Select>
+                    </Grid>
+                    <Grid item={true} md={3}>
+                      <h6>Phường / xã</h6>
+                      <Select
+                        value={location3}
+                        onChange={onChangeL3}
+                        placeholder="Phường/xã"
+                        style={{ width: "100%" }}
+                      >
+                        {!!LoadL3()
+                          ? LoadL3()
+                              .map((item) => {
+                                return (
+                                  <Option key={item} value={item.name}>
+                                    {item.name}
+                                  </Option>
+                                );
+                              })
+                              .sort()
+                          : null}
+                      </Select>
+                    </Grid>
+                    <Grid md={8} item={true}>
+                      <TextField
+                        required
+                        error={errAddress}
+                        helperText={
+                          errAddress == true
+                            ? "Địa chỉ không được để trống"
+                            : ""
+                        }
+                        value={address}
+                        onChange={onChangeAddress}
+                        style={{ width: "100%" }}
+                        label="Dịa chỉ"
+                      ></TextField>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
             </Grid>
-            <Grid md={8} item={true}>
-              <TextField
-                required
-                error={errAddress}
-                helperText={
-                  errAddress == true ? "Địa chỉ không được để trống" : ""
-                }
-                value={address}
-                onChange={onChangeAddress}
-                style={{ width: "100%" }}
-                label="Dịa chỉ"
-              ></TextField>
-            </Grid>
+
             <Grid md={8} item={true}>
               <h4>Hình thức thanh toán</h4>
               <Select
