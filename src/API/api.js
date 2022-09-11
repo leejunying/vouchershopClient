@@ -1,4 +1,4 @@
-export const host = "http://localhost:5000";
+export const host = "https://voucherbuying.herokuapp.com";
 export const Request_User = {
   register: `${host}/auth/register`, //post
   login: `${host}/auth/login`, //post
