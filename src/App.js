@@ -48,7 +48,7 @@ function App() {
                 <Route path="/login" component={SignIn}></Route>
                 <Route path="/register" component={SignUp}></Route>
                 <Route path="/cart" component={Cart}></Route>
-                <Route path="/categorys/:type" component={Categorys}></Route>
+                <Route path="/categorys/filter" component={Categorys}></Route>
                 <Route
                   path="/profile/:username"
                   exact

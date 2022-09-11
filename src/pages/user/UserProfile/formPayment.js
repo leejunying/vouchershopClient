@@ -5,11 +5,13 @@ import { Request_User } from "../../../API/api";
 import Grid from "@mui/material/Grid";
 import { Select } from "antd";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import Pagination from "@mui/material/Pagination";
+import { updatenewpaymentClient } from "../../../Redux/Reducer/Account";
 
 const FormPayment = () => {
+  const dispatch = useDispatch();
   const info = useSelector((state) => state["account"]["Client"]);
   const payment = info.paymentid;
 
@@ -21,6 +23,20 @@ const FormPayment = () => {
   const [dataP, setDataP] = useState([]);
   const [loadingS, setLoadingS] = useState(true);
   const [loadingP, setLoadingP] = useState(true);
+
+  const getUser = () => {
+    axios
+      .get(Request_User.getprofile(info._id), {
+        headers: {
+          Authorization: `Basic ${info.accessToken}`,
+        },
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          dispatch(updatenewpaymentClient(res.data.paymentid));
+        }
+      });
+  };
 
   const pendingData = (data, page) => {
     const list = data.filter((item) => {
@@ -37,7 +53,7 @@ const FormPayment = () => {
 
   const sucessData = (data, page) => {
     const list = data.filter((item) => {
-      return item.status == "success";
+      return item.status != "pending";
     });
 
     const renderlist = displayData(list, page);
@@ -58,6 +74,12 @@ const FormPayment = () => {
     return currentPosts;
   };
 
+  //mount
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  //check news of payment
   useEffect(() => {
     if (payment) {
       const data1 = pendingData(payment, pageP);
@@ -77,7 +99,7 @@ const FormPayment = () => {
         setLoadingS(false);
       }
     }
-  }, []);
+  }, [payment]);
 
   const columns = [
     {
@@ -151,7 +173,7 @@ const FormPayment = () => {
         <Pagination count={totalP} page={pageP} onChange={handleChangeP} />
       </Grid>
       <Grid item={true} style={{ width: "100%", marginTop: "20px" }}>
-        Đơn hàng đã thanh toán
+        Đơn hàng đã xử lý
         <Table
           loading={loadingS}
           pagination={false}

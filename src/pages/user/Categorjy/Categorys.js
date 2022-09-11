@@ -1,15 +1,9 @@
 import "./Categorys.css";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import "antd/dist/antd.css";
 import axios from "axios";
-import { Layout, Breadcrumb, Card } from "antd";
-import {
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-} from "@ant-design/icons";
-import { Request_Admin, Request_User } from "../../../API/api";
+import { Request_User } from "../../../API/api";
 import CardItem from "../Vounchers/Card";
 import { Grid } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -22,49 +16,49 @@ const Categorys = () => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(1);
-  const [selected, setSelected] = useState("");
-  const [location, setLocations] = useState([]);
-  const { type } = useParams();
+  const [selected, setSelected] = useState(0);
+  const [category, setCategory] = useState([]);
+  const location = useLocation();
+
   const mbverti = useMediaQuery("(max-width:480px)");
+
+  const fixqueryTofilter = (location) => {
+    const filterObj = {
+      key: "",
+      page: page,
+      tag: "",
+    };
+
+    let key = location.slice(1, location.indexOf("="));
+    let keyvalue = location.slice(location.indexOf("=") + 1, location.length);
+
+    if (key == "key") {
+      filterObj.key = keyvalue;
+    } else {
+      filterObj.tag = keyvalue;
+    }
+
+    console.log(filterObj);
+    return filterObj;
+  };
 
   const handleChange = (event, value) => {
     setPage(value);
-    refreshData();
-  };
-  const changetypeToKey = (text) => {
-    let result = "";
-
-    if (text == "combovouchers") {
-      setSelected(1);
-      result = "CV";
-    }
-
-    if (text == "dichvuhangkhong") {
-      setSelected(2);
-      result = "DVHK";
-    }
-    if (text == "dichvulienket") {
-      setSelected(3);
-      result = "DVLK";
-    }
-    if (text == "dichvunghiduong") {
-      setSelected(4);
-      result = "DVND";
-    }
-    if (text == "dichvugolf") {
-      setSelected(5);
-      result = "DVG";
-    }
-    if (text == "sale") {
-      setSelected("SAL");
-      result = "SALE";
-    }
-    return result;
+    let search = fixqueryTofilter(location.search);
+    refreshData(search.key, search.page, search.tag);
   };
 
-  const refreshData = () => {
+  const getCategory = () => {
+    axios.get(Request_User.getcategory).then((res) => {
+      if (res.status == 200) {
+        setCategory(res.data);
+      }
+    });
+  };
+
+  const refreshData = (key, page, tag) => {
     axios
-      .get(`${Request_User.filtervoucher(changetypeToKey(type), page)}`)
+      .get(`${Request_User.filtervoucher(key, page, JSON.stringify(tag))}`)
       .then((res) => {
         if (res.status === 200) {
           console.log(res);
@@ -76,11 +70,12 @@ const Categorys = () => {
   };
 
   useEffect(() => {
-    setPage(1);
-    refreshData();
-  }, [type]);
-
-  // reanderItems
+    getCategory();
+  }, []);
+  useEffect(() => {
+    let search = fixqueryTofilter(location.search);
+    refreshData(search.key, search.page, search.tag);
+  }, [location]);
 
   return (
     <Grid style={{ position: "relative", zIndex: "1" }} className="categorys">
@@ -116,75 +111,29 @@ const Categorys = () => {
                 Danh mục chính
               </h5>
             </Grid>{" "}
-            <Grid item={true} md={6} display="flex" className="">
-              <Grid item={true} md={2}></Grid>
-              <Grid item={true} md={10}>
-                <Link
-                  className={selected == 6 ? "text-menu:active" : "text-menu"}
-                  to="sale"
-                >
-                  SALE
-                </Link>
-              </Grid>{" "}
-            </Grid>
-            <Grid item={true} md={7} display="flex">
-              <Grid item={true} md={2}></Grid>
-              <Grid item={true} md={10}>
-                <Link
-                  className={selected == 1 ? "text-menu:active" : "text-menu"}
-                  to="combovouchers"
-                >
-                  Combo Voucher
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid item={true} md={7} display="flex">
-              <Grid item={true} md={2}></Grid>
-              <Grid item={true} md={10}>
-                {" "}
-                <Link
-                  className={selected == 2 ? "text-menu:active" : "text-menu"}
-                  to="dichvuhangkhong"
-                >
-                  Dịch Vụ Hàng Không
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid item={true} md={7} display="flex">
-              <Grid item={true} md={2}></Grid>
-              <Grid item={true} md={10}>
-                <Link
-                  className={selected == 3 ? "text-menu:active" : "text-menu"}
-                  to="dichvunghiduong"
-                >
-                  Dịch Vụ Nghĩ Dưỡng
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid item={true} md={7} display="flex">
-              <Grid item={true} md={2}></Grid>
-              <Grid item={true} md={10}>
-                {" "}
-                <Link
-                  className={selected == 4 ? "text-menu:active" : "text-menu"}
-                  to="dichvulienket"
-                >
-                  Dịch Vụ Liên Kết
-                </Link>
-              </Grid>
-            </Grid>
-            <Grid item={true} md={7} display="flex">
-              {" "}
-              <Grid item={true} md={2}></Grid>
-              <Grid item={true} md={10}>
-                <Link
-                  className={selected == 5 ? "text-menu:active" : "text-menu"}
-                  to="dichvugolf"
-                >
-                  Dịch Vụ GOLF
-                </Link>
-              </Grid>
-            </Grid>
+            {category.map((item, indx) => {
+              return (
+                <Grid key={indx} item={true} md={7} display="flex" className="">
+                  <Grid item={true} md={2}></Grid>
+                  <Grid item={true} md={10}>
+                    <Link
+                      onClick={() => setSelected(indx)}
+                      className={
+                        selected == indx ? "text-menu:active" : "text-menu"
+                      }
+                      replace
+                      to={
+                        item.key.includes("Lo") == true
+                          ? `/categorys/filter?tag=${item.key}`
+                          : `/categorys/filter?key=${item.key}`
+                      }
+                    >
+                      {item.title}
+                    </Link>
+                  </Grid>{" "}
+                </Grid>
+              );
+            })}
             <Grid item={true} style={{ marginTop: "10px" }}></Grid>
           </Grid>
         </Grid>

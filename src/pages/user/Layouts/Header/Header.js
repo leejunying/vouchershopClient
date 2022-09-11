@@ -4,7 +4,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import SearchIcon from "@mui/icons-material/Search";
 import { Link } from "react-router-dom";
-import Icon, { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import Icon, {
+  ShoppingCartOutlined,
+  UserOutlined,
+  LogoutOutlined,
+  LoginOutlined,
+} from "@ant-design/icons";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { Select } from "antd";
 import { Input, Space } from "antd";
@@ -17,9 +23,12 @@ import { Grid } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { clientLogOut } from "../../../../Redux/Reducer/Account";
 
 const { Search } = Input;
 const Header = () => {
+  const dispatch = useDispatch();
+
   const mbhorizon = useMediaQuery("(max-width:320px)");
   const mbverti = useMediaQuery("(max-width:480px)");
   const [searchitem, setSearchitem] = useState([]);
@@ -33,6 +42,10 @@ const Header = () => {
   };
 
   window.addEventListener("scroll", setFixed);
+
+  const signOut = () => {
+    dispatch(clientLogOut());
+  };
 
   const fetchDropdownOptions = (key) => {
     axios.get(Request_User.getsearchvoucher(key)).then((res) => {
@@ -151,7 +164,7 @@ const Header = () => {
                   <Grid key={item} className="item">
                     {" "}
                     <img
-                      style={{ width: "100px", heigth: "100px" }}
+                      style={{ width: "100px", height: "100px" }}
                       src={item.img_url}
                     ></img>
                     <p>{item.title}</p>
@@ -162,15 +175,15 @@ const Header = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Grid item={true} md={4}>
+      <Grid item={true} md={5}>
         <Grid
           container
           display="flex"
-          justifyContent="flex-end"
+          justifyContent={"center"}
           style={{ width: "100%" }}
         >
-          <Grid item={true} md={3}>
-            <Link to="/categorys/sale">
+          <Grid item={true} md={2}>
+            <Link to="/categorys/filter?key=SALE">
               <img
                 className="saleimg"
                 style={{ width: "100%" }}
@@ -178,7 +191,7 @@ const Header = () => {
               ></img>
             </Link>
           </Grid>
-          <Grid item={true} md={3}>
+          <Grid item={true} md={2}>
             {" "}
             <Link to="/cart">
               <Grid
@@ -198,52 +211,113 @@ const Header = () => {
                   </Grid>
                   <span className="badge">{cart.length}</span>
                 </Grid>
-                <label style={{ fontSize: "14px", cursor: "pointer" }}>
+                <label style={{ fontSize: "12px", cursor: "pointer" }}>
                   {" "}
                   CART
                 </label>
               </Grid>
             </Link>
           </Grid>
-          <Grid item={true} md={3}>
-            {" "}
-            <Link
-              className="notification"
-              style={{ fontSize: "18px" }}
-              to={user?.username ? `/profile/:${user.username}` : `/login`}
-            >
-              {user?.username ? (
-                <Grid display="flex" flexDirection="column">
+
+          {user?.username ? (
+            <Grid item={true} md={2}>
+              {" "}
+              <Link to={`/profile/${user.username}`}>
+                <Grid
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Grid className="notification">
+                    <Grid>
+                      <img
+                        style={{ width: "100%", height: "26px" }}
+                        src={
+                          user.avatar.length > 0
+                            ? user.avatar
+                            : "https://www.w3schools.com/howto/img_avatar2.png"
+                        }
+                      ></img>{" "}
+                    </Grid>
+                  </Grid>
                   <label
                     style={{
-                      fontSize: "14px",
-                      textTransform: "uppercase",
+                      fontSize: "13px",
                       cursor: "pointer",
                     }}
                   >
                     {user.username}
                   </label>
                 </Grid>
-              ) : (
-                <Grid
-                  display="flex"
-                  flexDirection="column"
-                  alignItems={"center"}
-                  style={{ cursor: "pointer" }}
-                >
-                  <UserOutlined
-                    style={{
-                      fontSize: "25px",
-                    }}
-                  />
-                  <label style={{ fontSize: "14px", cursor: "pointer" }}>
-                    {" "}
-                    LOGIN
-                  </label>
+              </Link>
+            </Grid>
+          ) : null}
+
+          {user?.username ? (
+            <Grid item={true} md={2}>
+              <Grid
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Grid className="notification">
+                  <Grid>
+                    <LogoutOutlined
+                      onClick={() => signOut()}
+                      style={{
+                        fontSize: "25px",
+                        cursor: "pointer",
+                        color: "#1890ff",
+                      }}
+                    ></LogoutOutlined>
+                  </Grid>
                 </Grid>
-              )}
-            </Link>
-          </Grid>
+                <label
+                  style={{
+                    fontSize: "13px",
+                    cursor: "pointer",
+                    color: "#1890ff",
+                  }}
+                >
+                  Sign out
+                </label>
+              </Grid>
+            </Grid>
+          ) : (
+            <Grid item={true} md={2}>
+              <Grid
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Link to="/login">
+                  <Grid className="notification">
+                    <Grid>
+                      <LoginOutlined
+                        style={{
+                          fontSize: "25px",
+                          cursor: "pointer",
+                          color: "#1890ff",
+                        }}
+                      ></LoginOutlined>
+                    </Grid>
+                  </Grid>
+                  <label
+                    style={{
+                      fontSize: "13px",
+                      cursor: "pointer",
+                      color: "#1890ff",
+                    }}
+                  >
+                    Sign in
+                  </label>
+                </Link>
+              </Grid>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>

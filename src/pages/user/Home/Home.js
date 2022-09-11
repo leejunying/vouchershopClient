@@ -125,7 +125,7 @@ const Home = () => {
         >
           <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/combovouchers">
+            <Link to="/categorys/filter?key=CV">
               <Grid
                 className="item"
                 direction="column"
@@ -140,7 +140,7 @@ const Home = () => {
           </Grid>
           <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/dichvunghiduong">
+            <Link to="/categorys/filter?key=DVND">
               <Grid
                 className="item"
                 display={"flex"}
@@ -155,7 +155,7 @@ const Home = () => {
           </Grid>
           <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/dichvuhangkhong">
+            <Link to="/categorys/filter?key=DVHK">
               <Grid
                 className="item"
                 display={"flex"}
@@ -170,7 +170,7 @@ const Home = () => {
           </Grid>
           <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/dichvulienket">
+            <Link to="/categorys/filter?key=DVLK">
               <Grid
                 className="item"
                 display={"flex"}
@@ -185,7 +185,7 @@ const Home = () => {
           </Grid>
           <Grid item={true} xs={3} md={2}>
             {" "}
-            <Link to="/categorys/dichvugolf">
+            <Link to="/categorys/filter?key=DVG">
               <Grid
                 className="item"
                 display={"flex"}

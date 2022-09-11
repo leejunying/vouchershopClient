@@ -51,6 +51,8 @@ const theme = createTheme();
 
 export default function SignIn() {
   const [islogin, setIslogin] = React.useState(false);
+  const [errusername, setErrusername] = React.useState("");
+  const [errpassword, setErrpassword] = React.useState("");
 
   const info_client = useSelector((state) => state["account"]["Client"]);
   const dispatch = useDispatch();
@@ -83,13 +85,20 @@ export default function SignIn() {
         .post(Request_User.login, data)
         .then((res) => {
           if (res.status == 200) {
+            console.log(res);
             dispatch(clientLogin(res.data));
 
-            setTimeout(setIslogin(true), 1500);
+            setTimeout(() => {
+              setIslogin(true);
+            }, 1500);
           }
         })
         .catch((err) => {
-          console.log(err);
+          if (err.response.status == 404) {
+            let errors = err.response.data;
+            setErrusername(errors.username);
+            setErrpassword(errors.password);
+          }
         });
     }
   };
@@ -147,7 +156,9 @@ export default function SignIn() {
                 id="username"
                 {...register("username")}
                 FormHelperTextProps={{ style: { color: "red" } }}
-                helperText={errors.username?.message}
+                helperText={
+                  errusername != "" ? errusername : errors.username?.message
+                }
               />
               <TextField
                 error={errors.password ? true : false}
@@ -160,7 +171,9 @@ export default function SignIn() {
                 id="password"
                 {...register("password")}
                 FormHelperTextProps={{ style: { color: "red" } }}
-                helperText={errors.password?.message}
+                helperText={
+                  errpassword != "" ? errpassword : errors.password?.message
+                }
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}

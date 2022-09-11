@@ -170,12 +170,17 @@ const Detail = () => {
       }}
     >
       <Suspense fallback={<Spin indicator={antIcon} />}>
-        <Grid item={true} style={{ width: "100%" }}>
+        <Grid item={true} style={{ width: "100%", position: "relative" }}>
           <Grid
             container
             md={12}
             xs={12}
-            className="detailTop-left flex jus-center"
+            className="detailTop-left"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            style={{ padding: "10px" }}
           >
             <Grid item={true} md={3} style={{ position: "relative" }}>
               <Grid
@@ -209,7 +214,10 @@ const Detail = () => {
                 ) : null}
               </Grid>
               <Grid item={true} style={{ position: "relative" }}>
-                <img style={{ width: "100%" }} src={data.img_url}></img>
+                <img
+                  style={{ width: "100%", height: "100%" }}
+                  src={data.img_url}
+                ></img>
               </Grid>
             </Grid>
             <Grid
@@ -220,13 +228,22 @@ const Detail = () => {
               className="voucher-info "
             >
               <h2 style={{ fontSize: 30, marginTop: 20 }}>{data["title"]}</h2>
-              <Grid>
+              <Grid
+                container
+                display="flex"
+                justifyContent="flex-start space-evenly"
+              >
                 {data["categorys"] != undefined
                   ? data["categorys"].map((data, indx) => {
                       return (
-                        <a key={indx} style={{ color: "blue" }}>
-                          {data.title}
-                        </a>
+                        <Grid item={true} key={indx}>
+                          <Link
+                            to={`/categorys/filter?tagid=${data._id}`}
+                            style={{ color: "blue", fontSize: "12px" }}
+                          >
+                            {data.title}
+                          </Link>
+                        </Grid>
                       );
                     })
                   : null}
@@ -270,7 +287,13 @@ const Detail = () => {
                   //Key HK
 
                   data["key"] == "DVHK" ? (
-                    <Grid container spacing={2} className="flex options">
+                    <Grid
+                      container
+                      spacing={1}
+                      display="flex"
+                      alignItems="center"
+                      className="flex options"
+                    >
                       <Grid item={true} xs={2}>
                         {" "}
                         Gói tháng
@@ -439,11 +462,39 @@ const Detail = () => {
                     " VND"
                   : 0}
               </Grid>
-
-              {Commonfc.exPried(data.limitedtime) < 0 ? (
-                <Button type="primary" disabled className="btn-color">
-                  Ngưng bán
-                </Button>
+              {data.status == "SALE" ? (
+                <Grid item={true}>
+                  {Commonfc.exPried(data.limitedtime) < 0 ? (
+                    <Button type="primary" disabled className="btn-color">
+                      Ngưng bán
+                    </Button>
+                  ) : (
+                    <Grid container spacing={1} className="div_btn">
+                      <Grid item={true} md={4}>
+                        <Button
+                          type="primary"
+                          onClick={addTocart}
+                          block
+                          style={{ width: "80%", margin: 10 }}
+                        >
+                          Thêm Vào giỏ Hàng
+                        </Button>
+                      </Grid>
+                      <Grid item={true} md={4}>
+                        <Link to="/cart">
+                          <Button
+                            type="red-7"
+                            onClick={addTocart}
+                            block
+                            style={{ width: "80%", margin: 10 }}
+                          >
+                            Mua Ngay
+                          </Button>
+                        </Link>
+                      </Grid>
+                    </Grid>
+                  )}
+                </Grid>
               ) : (
                 <Grid container spacing={1} className="div_btn">
                   <Grid item={true} md={4}>
@@ -472,31 +523,32 @@ const Detail = () => {
               )}
             </Grid>
           </Grid>
-        </Grid>
-        <Grid
-          container
-          display="flex"
-          justifyContent="center"
-          className="tab-voucherdetail"
-        >
-          <Grid item={true} md={6}>
-            <Tabs defaultActiveKey={tab} onChange={onChangeTab}>
-              <TabPane tab="Thông tin chi tiết" key="detail">
-                <Grid
-                  dangerouslySetInnerHTML={{
-                    __html: displaydetailByType(tab),
-                  }}
-                ></Grid>
-                {}
-              </TabPane>
-              <TabPane tab="Chính sách" key="policy">
-                <Grid
-                  dangerouslySetInnerHTML={{
-                    __html: displaydetailByType(tab),
-                  }}
-                ></Grid>
-              </TabPane>
-            </Tabs>
+
+          <Grid
+            container
+            display="flex"
+            justifyContent="center"
+            className="tab-voucherdetail"
+          >
+            <Grid item={true} md={6}>
+              <Tabs defaultActiveKey={tab} onChange={onChangeTab}>
+                <TabPane tab="Thông tin chi tiết" key="detail">
+                  <Grid
+                    dangerouslySetInnerHTML={{
+                      __html: displaydetailByType(tab),
+                    }}
+                  ></Grid>
+                  {}
+                </TabPane>
+                <TabPane tab="Chính sách" key="policy">
+                  <Grid
+                    dangerouslySetInnerHTML={{
+                      __html: displaydetailByType(tab),
+                    }}
+                  ></Grid>
+                </TabPane>
+              </Tabs>
+            </Grid>
           </Grid>
         </Grid>
       </Suspense>

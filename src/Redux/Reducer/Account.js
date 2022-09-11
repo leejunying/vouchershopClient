@@ -26,6 +26,10 @@ export const accountSlice = createSlice({
       state.Client.paymentid = oldlist;
     },
 
+    updatenewpaymentClient: (state, action) => {
+      state.Client.paymentid = action.payload;
+    },
+
     updateClient: (state, action) => {
       const { phone, email, address, firstname, lastname, avatar } =
         action.payload;
@@ -38,15 +42,8 @@ export const accountSlice = createSlice({
       state.Client.address = address;
       state.Client.avatar = avatar;
     },
-    clientLogOut: (state, action) => {
+    clientLogOut: (state) => {
       state.Client = {};
-    },
-
-    changeAdminDisplay: (state, action) => {
-      state.Admin = { ...action.payload };
-    },
-    changeClientDisplay: (state, action) => {
-      state.Client = { ...action.payload };
     },
   },
 });
@@ -55,10 +52,10 @@ export const accountSlice = createSlice({
 export const {
   adminLogin,
   clientLogin,
-  changeAdminDisplay,
-  changeClientDisplay,
+  clientLogOut,
   updateClient,
   updatepaymentClient,
+  updatenewpaymentClient,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

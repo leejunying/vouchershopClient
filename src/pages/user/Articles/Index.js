@@ -68,7 +68,7 @@ const ArticlesPanel = () => {
           <Grid item={true}>
             {items.map((item) => {
               return (
-                <Link to="#">
+                <Link to={`/post/${item._id}`}>
                   <Grid
                     container
                     display="flex"
@@ -133,7 +133,7 @@ const ArticlesPanel = () => {
             flexDirection="column"
             className="articles-newest"
           >
-            <Link to="#">
+            <Link to={`/post/${toppost[0]?._id}`}>
               <Grid md={12} sm={12} item={true}>
                 <img className="newest-img" src={toppost[0]?.img_url}></img>
               </Grid>
@@ -156,7 +156,7 @@ const ArticlesPanel = () => {
             <Grid item={true}>
               {items.map((item) => {
                 return (
-                  <Link to="#">
+                  <Link to={`/post/${item._id}`}>
                     <Grid
                       container
                       display="flex"
@@ -217,7 +217,7 @@ const ArticlesPanel = () => {
           return (
             <Grid style={{ marginTop: "10px" }} item={true}>
               {" "}
-              <Link to="#">
+              <Link to={`/post/${item?._id}`}>
                 <Grid
                   container
                   spacing={2}

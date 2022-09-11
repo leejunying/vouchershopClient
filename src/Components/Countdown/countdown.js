@@ -6,31 +6,22 @@ import { Grid } from "@mui/material";
 const useCountDown = (inputtime) => {
   const inputTime = new Date(inputtime);
   const eventTime = inputTime.getTime();
-
-  const calculateDuration = (eventTime) =>
-    moment.duration(
-      Math.max(eventTime - Math.floor(Date.now() / 1000), 0),
-      "seconds",
-    );
-
-  const [duration, setDuration] = useState(calculateDuration(eventTime));
-  const timerRef = useRef(0);
-  const timerCallback = useCallback(() => {
-    setDuration(calculateDuration(eventTime));
-  }, [eventTime]);
+  const [duration, setDuration] = useState(eventTime - new Date().getTime());
 
   useEffect(() => {
-    timerRef.current = setInterval(timerCallback, 1000);
+    const interval = setInterval(() => {
+      setDuration(eventTime - new Date().getTime());
+    }, 1000);
 
-    return () => {
-      clearInterval(timerRef.current);
-    };
+    return () => clearInterval(interval);
   }, [eventTime]);
 
-  const days = duration.days();
-  const hours = duration.hours();
-  const minutes = duration.minutes();
-  const seconds = duration.seconds();
+  const days = Math.floor(duration / (1000 * 60 * 60 * 24));
+  const hours = Math.floor(
+    (duration % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+  );
+  const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((duration % (1000 * 60)) / 1000);
   return {
     days,
     hours,

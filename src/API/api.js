@@ -10,9 +10,10 @@ export const Request_User = {
   getsearchvoucher: (text) => {
     return `${host}/voucher/search/${text}`;
   },
-  filtervoucher: (key, page) => {
-    return `${host}/voucher/filter?key=${key}&&page=${page}`;
-  }, //get + query
+  filtervoucher: (key, page, tag) => {
+    return `${host}/voucher/filter?key=${key}&&page=${page}&&tag=${tag}`;
+  },
+
   submitpayment: `${host}/payment`, //post
   getTopPost: `${host}/post/top`,
 
@@ -24,6 +25,10 @@ export const Request_User = {
   getPostByID: (id) => {
     return `${host}/post/find?id=${id}`;
   },
+  getprofile: (id) => {
+    return `${host}/user/find?id=${id}`;
+  },
+  getcategory: `${host}/category`,
 };
 export const Request_Admin = {
   ///////voucher
@@ -33,7 +38,6 @@ export const Request_Admin = {
   deleteVoucherById: `${host}/voucher`,
   getvoucherbykey: `${host}/voucher?`, //get (categorykey="all||key name"&&page="")
   getallvoucher: `${host}/voucher`, //get
-
   getDetailpostByVoucherid: (voucherid) => {
     return `${host}/detailpost?voucherid=${voucherid}`;
   }, //querybyID voucherid=
