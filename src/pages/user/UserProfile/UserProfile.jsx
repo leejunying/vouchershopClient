@@ -12,11 +12,12 @@ import Grid from "@mui/material/Grid";
 import FormChangepassword from "./formChangepassword";
 import FormPayment from "./formPayment";
 import FormInfo from "./formInfo";
+import { useMediaQuery } from "@mui/material";
 function UserProfile(props) {
   const info_User = useSelector((state) => state["account"]["Client"]);
   /////
   const [select, setSelect] = useState(0);
-
+  const mbverti = useMediaQuery("(max-width:480px)");
   useEffect(() => {}, []);
 
   const renderContent = () => {
@@ -24,6 +25,45 @@ function UserProfile(props) {
     if (select == 1) return <FormInfo></FormInfo>;
     if (select == 2) return <FormChangepassword></FormChangepassword>;
   };
+
+  if (mbverti == true) {
+    return (
+      <Grid container display="flex" flexDirection="column" className="profile">
+        <Grid
+          container
+          display="flex"
+          justifyContent="center space-evenly"
+          className="tab"
+        >
+          <Grid
+            item={true}
+            className={select == 0 ? "select-active" : "select"}
+            onClick={() => setSelect(0)}
+          >
+            <label className="select-title">payment</label>
+          </Grid>{" "}
+          <Grid
+            item={true}
+            className={select == 1 ? "select-active" : "select"}
+            onClick={() => setSelect(1)}
+          >
+            <label className="select-title">information</label>
+          </Grid>{" "}
+          <Grid
+            item={true}
+            className={select == 2 ? "select-active" : "select"}
+            onClick={() => setSelect(2)}
+          >
+            <label className="select-title">change password</label>
+          </Grid>
+        </Grid>
+        <Grid className="content" style={{ padding: "5px" }}>
+          {" "}
+          {renderContent()}
+        </Grid>
+      </Grid>
+    );
+  }
 
   return (
     <Grid container display="flex" flexDirection="column" className="profile">

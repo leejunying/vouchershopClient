@@ -24,7 +24,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { clientLogOut } from "../../../../Redux/Reducer/Account";
-
+import Mobilemenu from "../Mobilemenu/mobilemenu";
 const { Search } = Input;
 const Header = () => {
   const dispatch = useDispatch();
@@ -35,6 +35,11 @@ const Header = () => {
   const [searchinput, setSearchinput] = useState("");
   const [mbmenu, setmbMenu] = useState(false);
   const [fix, setFix] = useState(false);
+
+  const handleMbmenu = () => {
+    if (mbmenu == true) setmbMenu(false);
+    else setmbMenu(true);
+  };
 
   const setFixed = () => {
     if (window.scrollY >= 150) setFix(true);
@@ -93,16 +98,6 @@ const Header = () => {
           zIndex: 100,
         }}
       >
-        <Grid item={true} xs={fix ? 2 : 3}>
-          <FontAwesomeIcon
-            onClick={() => setmbMenu(true)}
-            style={{ cursor: "pointer", fontSize: "22px" }}
-            icon={faBars}
-            id="icon"
-            className="d-flex align-items-center"
-          />
-        </Grid>
-        {}
         <Grid item={true} xs={fix ? 6 : 9} className="flex">
           <Link to="/">
             {" "}
@@ -113,6 +108,38 @@ const Header = () => {
               src="./logo.png"
             ></img>
           </Link>
+        </Grid>
+
+        <Grid
+          container
+          display="flex"
+          justifyContent="flex-end"
+          style={{ width: "100vw", position: "fixed", zIndex: "1", top: 10 }}
+        >
+          <Grid item={true} xs={3} className="Right-menu"></Grid>
+          <Grid item={true} xs={7} className="Left-menu">
+            <Grid
+              item={true}
+              xs={12}
+              display="flex"
+              justifyContent={"flex-end"}
+            >
+              <FontAwesomeIcon
+                onClick={() => handleMbmenu()}
+                style={{
+                  cursor: "pointer",
+                  fontSize: "22px",
+
+                  right: 0,
+                }}
+                icon={faBars}
+                id="icon"
+              />
+              <Grid item={true} xs={3} className="Right-menu"></Grid>
+            </Grid>
+
+            {!!mbmenu ? <Mobilemenu></Mobilemenu> : null}
+          </Grid>
         </Grid>
       </Grid>
     );

@@ -34,18 +34,11 @@ const LoginAdmin = () => {
 
   const onFinish = (values) => {
     console.log("Finish:", values);
-
-    axios.post(Request_User.login, values, { headers: {} }).then((response) => {
-      console.log(response);
+    console.log(values);
+    axios.post(Request_User.login, values).then((response) => {
       if (response) {
+        console.log(response);
         dispatch(adminLogin(response.data));
-
-        // let changeurl = "/admin/dashboard";
-        // history.push(changeurl);
-
-        // let cookie = Cookies.get("refreshToken");
-
-        // console.log(cookie);
       }
     });
   };

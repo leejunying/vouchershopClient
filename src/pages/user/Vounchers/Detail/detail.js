@@ -227,7 +227,9 @@ const Detail = () => {
               style={{ marginLeft: "10px" }}
               className="voucher-info "
             >
-              <h2 style={{ fontSize: 30, marginTop: 20 }}>{data["title"]}</h2>
+              <h2 style={{ fontSize: "1.2rem", marginTop: 20 }}>
+                {data["title"]}
+              </h2>
               <Grid
                 container
                 display="flex"
@@ -253,12 +255,18 @@ const Detail = () => {
                 {
                   //Key G
                   data["key"] == "DVG" ? (
-                    <Grid container spacing={2} className="flex options">
-                      <Grid item={true} xs={2}>
+                    <Grid
+                      container
+                      spacing={2}
+                      xs={12}
+                      md={10}
+                      className="flex options"
+                    >
+                      <Grid item={true} md={2} xs={4}>
                         Thời hạn
                       </Grid>
 
-                      <Grid item={true} xs={6}>
+                      <Grid item={true} md={6} xs={8}>
                         <Select
                           defaultValue={
                             data["price_options"]["duration"][0].value
@@ -294,12 +302,12 @@ const Detail = () => {
                       alignItems="center"
                       className="flex options"
                     >
-                      <Grid item={true} xs={2}>
+                      <Grid item={true} md={2} xs={4}>
                         {" "}
                         Gói tháng
                       </Grid>
 
-                      <Grid item={true} xs={6}>
+                      <Grid item={true} md={6} xs={8}>
                         <Select
                           defaultValue={
                             Commonfc.valuesofObj(
@@ -330,12 +338,12 @@ const Detail = () => {
 
                   data["key"] == "DVND" ? (
                     <Grid container spacing={2} className=" flex  options">
-                      <Grid item={true} className="flex" xs={10}>
-                        <Grid item={true} xs={2}>
+                      <Grid item={true} className="flex" md={10} xs={12}>
+                        <Grid item={true} md={2} xs={4}>
                           Màu sắc
                         </Grid>
 
-                        <Grid item={true} xs={6}>
+                        <Grid item={true} md={6} xs={8}>
                           <Select
                             defaultValue={
                               data["price_options"]["color"][0].value
@@ -358,12 +366,12 @@ const Detail = () => {
                         </Grid>
                       </Grid>
 
-                      <Grid item={true} className="flex" xs={10}>
-                        <Grid item={true} xs={2}>
+                      <Grid item={true} className="flex" md={10} xs={12}>
+                        <Grid item={true} md={2} xs={4}>
                           Thời hạn
                         </Grid>
 
-                        <Grid item={true} xs={6}>
+                        <Grid item={true} xs={8}>
                           <Select
                             defaultValue={
                               data["price_options"]["duration"][0].value
@@ -386,12 +394,12 @@ const Detail = () => {
                         </Grid>
                       </Grid>
 
-                      <Grid item={true} className="flex" xs={10}>
-                        <Grid item={true} xs={2}>
+                      <Grid item={true} className="flex" md={10} xs={12}>
+                        <Grid item={true} md={2} xs={4}>
                           Số phòng
                         </Grid>
 
-                        <Grid item={true} xs={6}>
+                        <Grid item={true} md={6} xs={8}>
                           <Select
                             defaultValue={
                               data["price_options"]["room"][0].title
@@ -419,12 +427,12 @@ const Detail = () => {
 
                   data["key"] == "DVLK" ? (
                     <Grid container spacing={2} className=" flex  options">
-                      <Grid item={true} className="flex" xs={10}>
-                        <Grid item={true} xs={2}>
+                      <Grid item={true} className="flex" md={10} xs={12}>
+                        <Grid item={true} md={2} xs={4}>
                           Hạn mức
                         </Grid>
 
-                        <Grid item={true} xs={6}>
+                        <Grid item={true} md={6} xs={8}>
                           <Select
                             defaultValue={
                               data["price_options"].duration[0].value
@@ -472,10 +480,9 @@ const Detail = () => {
                     <Grid container spacing={1} className="div_btn">
                       <Grid item={true} md={4}>
                         <Button
+                          style={{ width: "200px" }}
                           type="primary"
                           onClick={addTocart}
-                          block
-                          style={{ width: "80%", margin: 10 }}
                         >
                           Thêm Vào giỏ Hàng
                         </Button>
@@ -483,10 +490,9 @@ const Detail = () => {
                       <Grid item={true} md={4}>
                         <Link to="/cart">
                           <Button
+                            style={{ width: "200px" }}
                             type="red-7"
                             onClick={addTocart}
-                            block
-                            style={{ width: "80%", margin: 10 }}
                           >
                             Mua Ngay
                           </Button>

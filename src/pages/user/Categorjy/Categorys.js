@@ -154,7 +154,7 @@ const Categorys = () => {
             <Grid item={true}>
               {" "}
               <Grid
-                style={{ padding: "20px", width: "100%", height: "60vh" }}
+                style={{ padding: "20px", width: "100%" }}
                 item={true}
                 display="flex"
               >
@@ -170,7 +170,15 @@ const Categorys = () => {
                 </Grid>
               </Grid>
               <Grid item={true}>
-                <Pagination count={total} page={page} onChange={handleChange} />
+                {data.length < 1 ? (
+                  <Grid>Hiện chưa có sản phẩm</Grid>
+                ) : (
+                  <Pagination
+                    count={total}
+                    page={page}
+                    onChange={handleChange}
+                  />
+                )}
               </Grid>
             </Grid>
           ) : (

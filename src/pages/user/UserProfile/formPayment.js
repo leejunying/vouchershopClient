@@ -110,7 +110,7 @@ const FormPayment = () => {
         record.purchase_items.map((item) => {
           return (
             <Grid display="flex" flexDirection="column">
-              <Grid>Sản phẩm {item.title}:</Grid>
+              <Grid style={{ fontSize: "12px" }}>Sản phẩm {item.title}:</Grid>
               <Grid>
                 Đơn giá{" "}
                 {item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
